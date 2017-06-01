@@ -26,11 +26,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    gobangboard.cpp
+    gobangboard.cpp \
+    boardui.cpp
 
 HEADERS += \
         mainwindow.h \
-    gobangboard.h
+    gobangboard.h \
+    boardui.h \
+    marcros.h
 
 FORMS += \
         mainwindow.ui

@@ -1,33 +1,27 @@
 #ifndef GOBANGBOARD_H
 #define GOBANGBOARD_H
+#include "marcros.h"
 #include <QWidget>
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QPainter>
 #include <QVector>
-#include <QLineF>
+#include <QTimer>
 class GobangBoard:public QWidget
 {
     Q_OBJECT
 public:
     explicit GobangBoard(QWidget *parent=0);
-//    GobangBoard(QWidget *parent=0)
     ~GobangBoard();
 //    int get_State();
 //    int get_Player();
-//    int (*get_Board())[15];
+//    int (*get_Board())[SIZE];
+signals:
+    void boardChange(int state,int player,int board[SIZE][SIZE]);
+public slots:
     int play(int x, int y);
     int regret();
-//    int save(std::string filename);
-protected:
-    void paintEvent(QPaintEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
 private:
     int state;
     int player;
-    int board[15][15];
+    int board[SIZE][SIZE];
     QVector<int> record;
     int countUD(int x,int y);
     int countLR(int x,int y);

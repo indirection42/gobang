@@ -1,49 +1,66 @@
 #include "gobangboard.h"
-//SIZE
-#define SIZE 15
-
-// PLAYER
-#define BLACK 6661
-#define WHITE 6662
-
-// STATE
-#define OVER 6671
-#define INGAME 6672
-
-// ERROR
-#define ERROR_NONE 6680 // no error
-#define ERROR_PLACE 6681 // can not play cause another chess piece is on the position
-#define ERROR_OVER 6682   // can not play cause this round is over
-#define ERROR_SAVE 6683   // can not save file
-#define ERROR_REGRET 6684 // nothing to regret
-
+#include "marcros.h"
 GobangBoard::GobangBoard(QWidget *parent):QWidget (parent){
-    //no GUI initialization
     state = INGAME;
     player = BLACK;
-    for (int i = 0; i < SIZE; i++)
-      for (int j = 0; j < SIZE; j++)
-        board[i][j] = 0;
-    //GUI initialization
-    this->setMouseTracking(true);
+    memset(board,0,sizeof(board));
+//    for (int i = 0; i < SIZE; i++)
+//      for (int j = 0; j < SIZE; j++)
+//        board[i][j] = 0;
+    emit boardChange(state,player,board);
 }
-//GobangBoard::GobangBoard(const GobangBoard &ori) {
-//  state = ori.state;
-//  player = ori.player;
-//  for (int i = 0; i < SIZE; i++)
-//    for (int j = 0; j < SIZE; j++)
-//      board[i][j] = ori.board[i][j];
-//  for (int i = 0; i < ori.record.size(); i++)
-//    record.push_back(ori.record[i]);
-//}
 
 GobangBoard::~GobangBoard(){}
 
+//int GobangBoard::get_State(void){ return state; }
+//int GobangBoard::get_Player(void){ return player; }
+//int (*GobangBoard::get_Board(void))[SIZE]{ return board; }
+
+// place the chess piece in the target location
+// change state & switch player
+// return ERROR if any
+int GobangBoard::play(int x, int y) {
+  if (state == OVER) {
+    return ERROR_OVER;
+  } else if (board[x][y]) {
+    return ERROR_PLACE;
+  } else {
+    board[x][y] = player;
+    record.push_back(x * 100 + y);
+    check(x, y);
+    emit boardChange(state,player,board);
+    return ERROR_NONE;
+  }
+}
+
+// regret
+// return error if there's nothing to regret
+// if succeed, change state or player
+int GobangBoard::regret(void) {
+  if (record.size() == 0)
+    return ERROR_REGRET;
+  int n = record[record.size() - 1];
+  record.pop_back();
+  board[n / 100][n % 100] = 0;
+  if (state == OVER)
+    state = INGAME;
+  else {
+    if (player == BLACK)
+      player = WHITE;
+    else
+      player = BLACK;
+  }
+  emit boardChange(state,player,board);
+  return 0;
+}
+
+
+
 // count the number of chess pieces in a row
-// UD	->	up down				->	|
-// LR	->	left right			->	-
-//LURD	->	left-up right-down	->	\
-//LDRU	->	left-down right-up	->	/
+// UD	->	up down
+// LR	->	left right
+//LURD	->	left-up right-down
+//LDRU	->	left-down right-up
 int GobangBoard::countUD(int x, int y) {
   int c = 0;
   int temp = x;
@@ -126,114 +143,4 @@ void GobangBoard::check(int x, int y) {
       player = BLACK;
   }
 }
-// place the chess piece in the target location
-// change state & switch player
-// return ERROR if any
-int GobangBoard::play(int x, int y) {
-  if (state == OVER) {
-    return ERROR_OVER;
-  } else if (board[x][y]) {
-    return ERROR_PLACE;
-  } else {
-    board[x][y] = player;
-    record.push_back(x * 100 + y);
-    check(x, y);
-    return ERROR_NONE;
-  }
-}
 
-// regret
-// return error if there's nothing to regret
-// if succeed, change state or player
-int GobangBoard::regret(void) {
-  if (record.size() == 0)
-    return ERROR_REGRET;
-  int n = record[record.size() - 1];
-  record.pop_back();
-  board[n / 100][n % 100] = 0;
-  if (state == OVER)
-    state = INGAME;
-  else {
-    if (player == BLACK)
-      player = WHITE;
-    else
-      player = BLACK;
-  }
-  return 0;
-}
-
-void GobangBoard::paintEvent(QPaintEvent *event)
-{
-    int currentWidth,currentHeight,widthSpace,heightSpace;
-    currentWidth=this->width();
-    currentHeight=this->height();
-    widthSpace=currentWidth/(SIZE+1);
-    heightSpace=currentHeight/(SIZE+1);
-    QVector<QLine> verticalLines;
-    QVector<QLine> horizontalLines;
-    for(int i=0;i<=SIZE+1;i++){
-        QLine verticalLine(widthSpace*i,0,widthSpace*i,currentHeight);
-        QLine horizontalLine(0,heightSpace*i,currentWidth,heightSpace*i);
-        verticalLines.append(verticalLine);
-        horizontalLines.append(horizontalLine);
-    }
-    QPainter painter(this);
-    painter.setBackground(Qt::yellow);
-    QBrush brush(Qt::black);
-    painter.setBrush(brush);
-    painter.drawLines(verticalLines);
-    painter.drawLines(horizontalLines);
-    for(int i=0;i<SIZE;i++)
-        for(int j=0;j<SIZE;j++){
-            if(board[i][j]==BLACK){
-                QPointF center(widthSpace*(i+1),heightSpace*(j+1));
-                brush.setColor(Qt::black);
-                painter.setBrush(brush);
-                painter.drawEllipse(center,widthSpace/2,heightSpace/2);
-            }
-            else if(board[i][j]==WHITE){
-                QPointF center(widthSpace*(i+1),heightSpace*(j+1));
-                brush.setColor(Qt::white);
-                painter.setBrush(brush);
-                painter.drawEllipse(center,widthSpace/2,heightSpace/2);
-            }
-            else
-                continue;
-        }
-}
-
-void GobangBoard::mousePressEvent(QMouseEvent *event)
-{
-    int currentWidth,currentHeight,widthSpace,heightSpace;
-    currentWidth=this->width();
-    currentHeight=this->height();
-    widthSpace=currentWidth/(SIZE+1);
-    heightSpace=currentHeight/(SIZE+1);
-    QPoint pos=event->pos();
-    for(int i=0;i<SIZE;i++)
-        for(int j=0;j<SIZE;j++){
-            QRect rect(widthSpace*i+widthSpace/2,heightSpace*j+heightSpace/2,widthSpace,heightSpace);
-            if(rect.contains(pos)){
-                play(i,j);
-                update();
-                break;
-            }
-        }
-}
-
-void GobangBoard::mouseMoveEvent(QMouseEvent *event)
-{
-}
-
-// save the record
-//int GobangBoard::save(std::string filename) {
-//  std::ofstream output(filename);
-//  if (!output.is_open()) {
-//    std::cout << "Can not open" << filename << std::endl;
-//    return ERROR_SAVE;
-//  }
-//  for (int i = 0; i < record.size(); i++) {
-//    output << record[i] << ' ';
-//  }
-//  return ERROR_NONE;
-//}

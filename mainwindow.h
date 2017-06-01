@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include <QMainWindow>
-
+#include "gobangboard.h"
 namespace Ui {
 class MainWindow;
 }
