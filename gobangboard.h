@@ -15,14 +15,21 @@ public:
 //    int (*get_Board())[SIZE];
 signals:
     void boardChange(int state,int player,int board[SIZE][SIZE]);
+    void blackTimeChange(int blackTimer);
+    void whiteTimeChange(int whiteTimer);
 public slots:
     int play(int x, int y);
     int regret();
+    void startTimer();
+private slots:
+    void changePlayerTimer();
 private:
     int state;
     int player;
     int board[SIZE][SIZE];
     QVector<int> record;
+    int blackTimer;
+    int whiteTimer;
     int countUD(int x,int y);
     int countLR(int x,int y);
     int countLURD(int x,int y);

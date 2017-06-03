@@ -1,12 +1,13 @@
 #include "gobangboard.h"
 #include "marcros.h"
-GobangBoard::GobangBoard(QWidget *parent):QWidget (parent){
+GobangBoard::GobangBoard(QWidget *parent):QWidget (parent),blackTimer(1800),whiteTimer(1800){
     state = INGAME;
     player = BLACK;
     memset(board,0,sizeof(board));
 //    for (int i = 0; i < SIZE; i++)
 //      for (int j = 0; j < SIZE; j++)
 //        board[i][j] = 0;
+
     emit boardChange(state,player,board);
 }
 
@@ -33,6 +34,7 @@ int GobangBoard::play(int x, int y) {
   }
 }
 
+
 // regret
 // return error if there's nothing to regret
 // if succeed, change state or player
@@ -54,8 +56,23 @@ int GobangBoard::regret(void) {
   return 0;
 }
 
-
-
+void GobangBoard::startTimer(){
+    QTimer *secTimer=new QTimer(this);
+    QObject::connect(secTimer,&QTimer::timeout,this,&GobangBoard::changePlayerTimer);
+    secTimer->start(1000);
+}
+void GobangBoard::changePlayerTimer(){
+    if(state==INGAME){
+        if(player==BLACK){
+            blackTimer--;
+            emit blackTimeChange(blackTimer);
+        }
+        else{
+            whiteTimer--;
+            emit whiteTimeChange(whiteTimer);
+        }
+    }
+}
 // count the number of chess pieces in a row
 // UD	->	up down
 // LR	->	left right
