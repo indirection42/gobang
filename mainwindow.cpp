@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "gobangboard.h"
 #include "boardui.h"
+#include "client.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -16,6 +17,11 @@ MainWindow::MainWindow(QWidget *parent) :
      QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->lcdNumber),SLOT(display(int)));
      QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->lcdNumber_2),SLOT(display(int)));
      gobangboard->startTimer();
+
+     client *cli = new client(this);
+     cli->setServer("localhost",39944);//according to the server's IP and port
+     QObject::connect(boardui,SIGNAL(requestPlay(int,int)),cli,SLOT(sendLocalPlay(int,int)));
+     QObject::connect(cli,SIGNAL(getRemotePlay(int,int)),gobangboard,SLOT(play(int,int)));
 }
 
 MainWindow::~MainWindow()
