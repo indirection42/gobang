@@ -8,7 +8,7 @@ GobangBoard::GobangBoard(QWidget *parent):QWidget (parent),blackTimer(1800),whit
 //      for (int j = 0; j < SIZE; j++)
 //        board[i][j] = 0;
 
-    emit boardChange(state,player,board);
+    emit boardChange(state,player,board,record);
 }
 
 GobangBoard::~GobangBoard(){}
@@ -29,7 +29,7 @@ int GobangBoard::play(int x, int y) {
     board[x][y] = player;
     record.push_back(x * 100 + y);
     check(x, y);
-    emit boardChange(state,player,board);
+    emit boardChange(state,player,board,record);
     return ERROR_NONE;
   }
 }
@@ -52,7 +52,7 @@ int GobangBoard::regret(void) {
     else
       player = BLACK;
   }
-  emit boardChange(state,player,board);
+  emit boardChange(state,player,board,record);
   return 0;
 }
 
@@ -152,6 +152,8 @@ void GobangBoard::check(int x, int y) {
       LDRU = countLDRU(x, y);
   if ((UD >= 5) || (LR >= 5) || (LURD >= 5) || (LDRU >= 5)) {
     state = OVER;
+    emit boardChange(state, player, board, record);
+    emit requestGameover();
   } else {
     state = INGAME;
     if (player == BLACK)
@@ -159,5 +161,65 @@ void GobangBoard::check(int x, int y) {
     else
       player = BLACK;
   }
+}
+
+int GobangBoard::read(void)
+{
+    QString path = QFileDialog::getOpenFileName(this, tr("Choose your save"), ".", tr("Saving Files(*.txt)"));
+    if(path.length() == 0)
+    {
+        QMessageBox::information(NULL, tr("Path"), tr("You didn't select any files."));
+        return ERROR_READ;
+    } else
+    {
+        QFile file1(path);
+        QTextStream out1(&file1);
+        file1.open(QFile::ReadOnly);
+        if(!file1.isOpen())
+        {
+            printf( "nope\n");
+            return ERROR_READ;
+        }
+        while(!out1.atEnd())
+        {
+            qint32 i;
+            out1 >> i;
+            play(i/100,i%100);
+            //qDebug() << i;
+        }
+        file1.close();
+        return ERROR_NONE;
+    }
+}
+
+int GobangBoard::save(void)
+{
+    bool ok = 0;
+    QString path = QInputDialog::getText(this,
+                        tr( "Save Name" ),
+                        tr( "Please enter your save name" ),
+                        QLineEdit::Normal, QString::null, &ok);
+    if(ok == 0 || path.length() == 0)
+    {
+        QMessageBox::information(NULL, tr("ERROR"), tr("Illegal file name."));
+        return ERROR_SAVE;
+    } else
+    {
+        path = path + ".txt";
+        QFile file(path);
+        file.open(QFile::WriteOnly);
+        if(!file.isOpen())
+        {
+            printf( "nope\n");
+            return ERROR_SAVE;
+        }
+        QTextStream out(&file);
+        for(int i = 0;i<record.size();i++)
+        {
+            out << record[i] << ' ';
+        }
+        file.close();
+        return ERROR_NONE;
+    }
 }
 
