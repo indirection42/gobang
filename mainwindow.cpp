@@ -16,6 +16,15 @@ MainWindow::MainWindow(QWidget *parent) :
      QObject::connect(boardui,&BoardUi::requestRegret,gobangboard,&GobangBoard::regret);
      QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->lcdNumber),SLOT(display(int)));
      QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->lcdNumber_2),SLOT(display(int)));
+     QObject::connect(gobangboard,SIGNAL(requestGameover(void)),boardui,SLOT(gameover(void)));
+     // ////////////////////
+     //I write the SIGNAL(requestSave()) in class::boardui
+     //but I did not bound it with the button "save"
+     //you may rewrite the signal or add a button
+     //same as SIGNAL(requestRead()) and the read act
+     //QObject::connect(gobangboard,SIGNAL(requestSave(void)),gobangboard,SLOT(save(void)));
+     //QObject::connect(gobangboard,SIGNAL(requestRead(void)),gobangboard,SLOT(read(void)));
+     // ////////////////////
      gobangboard->startTimer();
 
      client *cli = new client(this);

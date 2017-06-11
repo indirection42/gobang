@@ -7,6 +7,10 @@
 #include <QPainter>
 #include <QPoint>
 #include <QMouseEvent>
+#include <QMessageBox>
+#include <QString>
+#include <QInputDialog>
+#include <QLineEdit>
 class BoardUi : public QWidget
 {
     Q_OBJECT
@@ -16,8 +20,11 @@ public:
 signals:
     void requestPlay(int i,int j);
     void requestRegret();
+    void requestSave();
+    void requestRead();
 public slots:
-    void updateInformation(int state,int player,int board[SIZE][SIZE]);
+    void updateInformation(int state,int player,int board[SIZE][SIZE],QVector<int> r);
+    void gameover();
 protected:
     void paintEvent(QPaintEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
@@ -28,6 +35,8 @@ private:
     int boardCopy[SIZE][SIZE];
     int moveSignX;
     int moveSignY;
+    int addNumber;
+    QVector<int> record;
 };
 
 #endif // BOARDUI_H
