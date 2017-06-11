@@ -23,11 +23,12 @@ signals:
     void boardChange(int state,int player,int board[SIZE][SIZE],  QVector<int> record);
     void blackTimeChange(int blackTimer);
     void whiteTimeChange(int whiteTimer);
-    void requestGameover();    //emit the signal when the game is over
+    void requestGameover(int winner);    //emit the signal when the game is over
 public slots:
     int play(int x, int y);
-    int regret();
-    void startTimer();
+    int regret(int regreter);
+    void giveup(int loser);
+    void start();
     int save();     //can call it at any time
     int read();     //have to clean the board then call it
 private slots:

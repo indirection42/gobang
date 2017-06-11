@@ -2,8 +2,8 @@
 #include "marcros.h"
 BoardUi::BoardUi(QWidget *parent) : QWidget(parent)
 {
-     stateCopy = INGAME;
-     playerCopy = BLACK;
+     stateCopy = IDLE;
+     playerCopy=BLACK;
      moveSignX=0;
      moveSignY=0;
      memset(boardCopy,0,sizeof(boardCopy));
@@ -12,11 +12,26 @@ BoardUi::BoardUi(QWidget *parent) : QWidget(parent)
 
 BoardUi::~BoardUi(){}
 
-void BoardUi::updateInformation(int state,int player,int board[SIZE][SIZE], QVector<int> r){
+void BoardUi::newGame(int newGameMode){
+    gameMode=newGameMode;
+    if(gameMode==LOCALPVP){
+        localPlayer=BOTH; //本机人人
+        emit start();
+    }
+    else if(gameMode==LOCALPVC){
+        localPlayer=BLACK; //暂时默认人永远是黑，AI永远是白
+        emit start();
+    }
+    else if(gameMode==ONLINEPVP){
+        //本机执什么颜色根据某种规则指定
+    }
+}
+
+void BoardUi::updateInformation(int state,int player,int board[SIZE][SIZE], QVector<int> record){
     memcpy(boardCopy,board,sizeof(boardCopy));
     stateCopy=state;
     playerCopy=player;
-    record.push_back(r[r.size() - 1]);
+    recordCopy=record;
     update();
 }
 
@@ -24,6 +39,7 @@ void BoardUi::updateInformation(int state,int player,int board[SIZE][SIZE], QVec
 
 void BoardUi::paintEvent(QPaintEvent *event)
 {
+
     int currentWidth,currentHeight,widthSpace,heightSpace;
     currentWidth=this->width();
     currentHeight=this->height();
@@ -44,6 +60,8 @@ void BoardUi::paintEvent(QPaintEvent *event)
     painter.setBrush(brush);
     painter.drawLines(verticalLines);
     painter.drawLines(horizontalLines);
+    if(stateCopy==IDLE)//游戏没开始则只画棋盘，不画移动标记和棋子
+        return;
     if (playerCopy==WHITE){
        brush.setColor(Qt::white);
        painter.setBrush(brush);
@@ -68,14 +86,14 @@ void BoardUi::paintEvent(QPaintEvent *event)
         }
     if(addNumber)
     {
-        for(int i = 0;i<record.size();i++)
+        for(int i = 0;i<recordCopy.size();i++)
         {
             if(i%2)
                 painter.setPen(Qt::black);
             else
                 painter.setPen(Qt::white);
-            painter.drawText(QRect((record[i]/100 * widthSpace + widthSpace / 2),
-                                   (record[i]%100 * heightSpace + heightSpace / 2),
+            painter.drawText(QRect((recordCopy[i]/100 * widthSpace + widthSpace / 2),
+                                   (recordCopy[i]%100 * heightSpace + heightSpace / 2),
                                    widthSpace,
                                    heightSpace),
                              Qt::AlignCenter,
@@ -86,16 +104,20 @@ void BoardUi::paintEvent(QPaintEvent *event)
 
 void BoardUi::mouseReleaseEvent(QMouseEvent *event)
 {
+    if(event->button()==Qt::RightButton){ //右键可以请求悔棋
+        emit requestRegret(localPlayer);
+    }
+    if(gameMode!=LOCALPVP){           //除去pvp模式,若当前玩家和本机玩家颜色不一致不允许下棋
+        if(playerCopy!=localPlayer)
+            return;
+    }
     int currentWidth,currentHeight,widthSpace,heightSpace;
     currentWidth=this->width();
     currentHeight=this->height();
     widthSpace=currentWidth/(SIZE+1);
     heightSpace=currentHeight/(SIZE+1);
     QPoint pos=event->pos();
-    if(event->button()==Qt::RightButton){
-        emit requestRegret();
-    }
-    else{
+    if(event->button()==Qt::LeftButton){
         for(int i=0;i<SIZE;i++)
             for(int j=0;j<SIZE;j++){
                 QRect rect(widthSpace*i+widthSpace/2,heightSpace*j+heightSpace/2,widthSpace,heightSpace);
@@ -109,6 +131,10 @@ void BoardUi::mouseReleaseEvent(QMouseEvent *event)
 
 void BoardUi::mouseMoveEvent(QMouseEvent *event)
 {
+    if(gameMode!=LOCALPVP){            //除去pvp模式,若当前玩家和本机玩家颜色不一致就什么都不做
+        if(playerCopy!=localPlayer)
+            return;
+    }
     int currentWidth,currentHeight,widthSpace,heightSpace;
     currentWidth=this->width();
     currentHeight=this->height();
@@ -126,10 +152,10 @@ void BoardUi::mouseMoveEvent(QMouseEvent *event)
         }
 }
 
-void BoardUi::gameover(void)
+void BoardUi::gameOver(int winner)
 {
     QString content;
-    if(playerCopy == BLACK)
+    if(winner == BLACK)
         content = "The game is over and the winner is BLACK!\n Want to save the match?";
     else
         content = "The game is over and the winner is WHITE!\n Want to save the match?";
@@ -166,4 +192,14 @@ void BoardUi::gameover(void)
         //clean the board
         //restart
     }
+}
+
+void BoardUi::regretBinding()
+{
+    emit requestRegret(localPlayer);
+}
+
+void BoardUi::giveupBinding()
+{
+    emit requestGiveUp(localPlayer);
 }

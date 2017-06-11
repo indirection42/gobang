@@ -7,19 +7,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-     ui->setupUi(this);
+
+    ui->setupUi(this);
 
 
 
-//     BoardUi *boardui=new BoardUi(this);
-     GobangBoard *gobangboard=new GobangBoard(this);
-     QObject::connect(gobangboard,&GobangBoard::boardChange,ui->boardui,&BoardUi::updateInformation);
-     QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),gobangboard,SLOT(play(int,int)));
-     QObject::connect(ui->boardui,&BoardUi::requestRegret,gobangboard,&GobangBoard::regret);
-     QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->blackLCD),SLOT(display(int)));
-     QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->whiteLCD),SLOT(display(int)));
-     QObject::connect(gobangboard,SIGNAL(requestGameover(void)),ui->boardui,SLOT(gameover(void)));
-     // ////////////////////
+
+    // ////////////////////
      //I write the SIGNAL(requestSave()) in class::boardui
      //but I did not bound it with the button "save"
      //you may rewrite the signal or add a button
@@ -27,7 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
      //QObject::connect(gobangboard,SIGNAL(requestSave(void)),gobangboard,SLOT(save(void)));
      //QObject::connect(gobangboard,SIGNAL(requestRead(void)),gobangboard,SLOT(read(void)));
      // ////////////////////
-     gobangboard->startTimer();
+
+
 
 //     client *cli = new client(this);
 //     cli->setServer("localhost",39299);//according to the server's IP and port
@@ -45,4 +40,20 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionQuit_Application_triggered()
 {
     QCoreApplication::quit();
+}
+
+void MainWindow::on_actionLocal_PvP_triggered()
+{
+    GobangBoard *gobangboard=new GobangBoard(this);
+    QObject::connect(gobangboard,&GobangBoard::boardChange,ui->boardui,&BoardUi::updateInformation);
+    QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),gobangboard,SLOT(play(int,int)));
+    QObject::connect(ui->boardui,&BoardUi::requestRegret,gobangboard,&GobangBoard::regret);
+    QObject::connect(ui->boardui,SIGNAL(requestGiveUp(int)),gobangboard,SLOT(giveup(int)));
+    QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->blackLCD),SLOT(display(int)));
+    QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->whiteLCD),SLOT(display(int)));
+    QObject::connect(gobangboard,SIGNAL(requestGameover(int)),ui->boardui,SLOT(gameOver(int)));
+    QObject::connect(ui->boardui,SIGNAL(start(void)),gobangboard,SLOT(start(void)));
+    QObject::connect(ui->regretButton,SIGNAL(clicked(void)),ui->boardui,SLOT(regretBinding(void)));
+    QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(giveupBinding(void)));
+    ui->boardui->newGame(LOCALPVP);
 }
