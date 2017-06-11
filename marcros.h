@@ -17,4 +17,5 @@
 #define ERROR_OVER 6682   // can not play cause this round is over
 #define ERROR_SAVE 6683   // can not save file
 #define ERROR_REGRET 6684 // nothing to regret
+#define ERROR_READ 6685 //can not read saving
 #endif // MARCROS_H
