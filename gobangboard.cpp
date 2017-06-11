@@ -105,17 +105,14 @@ int GobangBoard::read(void)
 int GobangBoard::save(void)
 {
     bool ok = 0;
-    QString path = QInputDialog::getText(this,
-                        tr( "Save Name" ),
-                        tr( "Please enter your save name" ),
-                        QLineEdit::Normal, QString::null, &ok);
-    if(ok == 0 || path.length() == 0)
+    QString path = QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("save files (*.save)"));
+    if(path.length() == 0)
     {
         QMessageBox::information(NULL, tr("ERROR"), tr("Illegal file name."));
         return ERROR_SAVE;
     } else
     {
-        path = path + ".txt";
+        path = path + ".save";
         QFile file(path);
         file.open(QFile::WriteOnly);
         if(!file.isOpen())

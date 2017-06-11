@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
      QObject::connect(ui->boardui,&BoardUi::requestRegret,gobangboard,&GobangBoard::regret);
      QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->blackLCD),SLOT(display(int)));
      QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->whiteLCD),SLOT(display(int)));
-     QObject::connect(gobangboard,SIGNAL(requestGameover(void)),ui->boardui,SLOT(gameover(void)));
+     QObject::connect(gobangboard,SIGNAL(requestGameover(void)),ui->boardui,SLOT(gameover()));
      // ////////////////////
      //I write the SIGNAL(requestSave()) in class::boardui
      //but I did not bound it with the button "save"
