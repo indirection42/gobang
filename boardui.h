@@ -11,6 +11,7 @@
 #include <QString>
 #include <QInputDialog>
 #include <QLineEdit>
+#include <QFileDialog>
 class BoardUi : public QWidget
 {
     Q_OBJECT
