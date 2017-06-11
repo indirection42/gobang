@@ -6,6 +6,7 @@ BoardUi::BoardUi(QWidget *parent) : QWidget(parent)
      playerCopy=BLACK;
      moveSignX=0;
      moveSignY=0;
+     addNumber=0;
      memset(boardCopy,0,sizeof(boardCopy));
      this->setMouseTracking(true);
 }
