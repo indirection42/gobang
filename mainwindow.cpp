@@ -8,15 +8,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
      ui->setupUi(this);
-     BoardUi *boardui=new BoardUi(this);
+
+
+
+//     BoardUi *boardui=new BoardUi(this);
      GobangBoard *gobangboard=new GobangBoard(this);
-     ui->gridLayout->addWidget(boardui);
-     QObject::connect(gobangboard,&GobangBoard::boardChange,boardui,&BoardUi::updateInformation);
-     QObject::connect(boardui,SIGNAL(requestPlay(int,int)),gobangboard,SLOT(play(int,int)));
-     QObject::connect(boardui,&BoardUi::requestRegret,gobangboard,&GobangBoard::regret);
-     QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->lcdNumber),SLOT(display(int)));
-     QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->lcdNumber_2),SLOT(display(int)));
-     QObject::connect(gobangboard,SIGNAL(requestGameover(void)),boardui,SLOT(gameover(void)));
+     QObject::connect(gobangboard,&GobangBoard::boardChange,ui->boardui,&BoardUi::updateInformation);
+     QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),gobangboard,SLOT(play(int,int)));
+     QObject::connect(ui->boardui,&BoardUi::requestRegret,gobangboard,&GobangBoard::regret);
+     QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->blackLCD),SLOT(display(int)));
+     QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->whiteLCD),SLOT(display(int)));
+     QObject::connect(gobangboard,SIGNAL(requestGameover(void)),ui->boardui,SLOT(gameover(void)));
      // ////////////////////
      //I write the SIGNAL(requestSave()) in class::boardui
      //but I did not bound it with the button "save"
@@ -27,10 +29,10 @@ MainWindow::MainWindow(QWidget *parent) :
      // ////////////////////
      gobangboard->startTimer();
 
-     client *cli = new client(this);
-     cli->setServer("localhost",39944);//according to the server's IP and port
-     QObject::connect(boardui,SIGNAL(requestPlay(int,int)),cli,SLOT(sendLocalPlay(int,int)));
-     QObject::connect(cli,SIGNAL(getRemotePlay(int,int)),gobangboard,SLOT(play(int,int)));
+//     client *cli = new client(this);
+//     cli->setServer("localhost",39299);//according to the server's IP and port
+//     QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),cli,SLOT(sendLocalPlay(int,int)));
+//     QObject::connect(cli,SIGNAL(getRemotePlay(int,int)),gobangboard,SLOT(play(int,int)));
 }
 
 MainWindow::~MainWindow()
@@ -38,3 +40,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
+
+void MainWindow::on_actionQuit_Application_triggered()
+{
+    QCoreApplication::quit();
+}
