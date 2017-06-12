@@ -19,6 +19,12 @@ private slots:
 
     void on_actionLocal_PvP_triggered();
 
+    void on_actionLoad_Game_triggered();
+
+    void on_actionSave_Game_triggered();
+
+    void on_actionOnline_PvP_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

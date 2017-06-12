@@ -129,10 +129,10 @@ int GobangBoard::save(int gamemode)
             return ERROR_SAVE;
         }
         QTextStream out(&file);
-        out << gamemode << ' ' << blackTimer << ' ' << whiteTimer << ' ';
+        out << gamemode << ' ' << blackTimer << ' ' << whiteTimer;
         for(int i = 0;i<record.size();i++)
         {
-            out << record[i] << ' ';
+            out << ' ' << record[i];
         }
         file.close();
         return ERROR_NONE;
