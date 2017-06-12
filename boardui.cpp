@@ -33,6 +33,10 @@ void BoardUi::updateInformation(int state,int player,int board[SIZE][SIZE], QVec
     stateCopy=state;
     playerCopy=player;
     recordCopy=record;
+    if(state == INGAME)
+        addNumber = 0;
+    else if(state == OVER)
+        addNumber = 1;
     update();
 }
 
@@ -175,10 +179,7 @@ void BoardUi::gameOver(int winner)
         widthSpace=currentWidth/(SIZE+1);
         heightSpace=currentHeight/(SIZE+1);
         bool ok;
-        QString path = QInputDialog::getText(this,
-                            tr( "Save Name" ),
-                            tr( "Please enter your save name" ),
-                            QLineEdit::Normal, QString::null, &ok);
+        QString path = QFileDialog::getSaveFileName(this,tr("Save Screen Shot"),QString(),tr("save files (*.png)"));
         if(ok == 0 || path.length() == 0)
         {
             QMessageBox::information(NULL, tr("ERROR"), tr("Illegal file name."));
