@@ -105,36 +105,13 @@ void GobangBoard::changePlayerTimer(){
         }
     }
 }
-int GobangBoard::read(void)
+ void GobangBoard::setTime(int b, int w)
 {
-    QString path = QFileDialog::getOpenFileName(this, tr("Choose your save"), ".", tr("Saving Files(*.txt)"));
-    if(path.length() == 0)
-    {
-        QMessageBox::information(NULL, tr("Path"), tr("You didn't select any files."));
-        return ERROR_READ;
-    } else
-    {
-        QFile file1(path);
-        QTextStream out1(&file1);
-        file1.open(QFile::ReadOnly);
-        if(!file1.isOpen())
-        {
-            printf( "nope\n");
-            return ERROR_READ;
-        }
-        while(!out1.atEnd())
-        {
-            qint32 i;
-            out1 >> i;
-            play(i/100,i%100);
-            //qDebug() << i;
-        }
-        file1.close();
-        return ERROR_NONE;
-    }
+    blackTimer = b;
+    whiteTimer = w;
 }
 
-int GobangBoard::save(void)
+int GobangBoard::save(int gamemode)
 {
     QString path = QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("save files (*.save)"));
     if(path.length() == 0)
@@ -143,7 +120,7 @@ int GobangBoard::save(void)
         return ERROR_SAVE;
     } else
     {
-        path = path + ".save";
+        //path = path + ".save";
         QFile file(path);
         file.open(QFile::WriteOnly);
         if(!file.isOpen())
@@ -152,6 +129,7 @@ int GobangBoard::save(void)
             return ERROR_SAVE;
         }
         QTextStream out(&file);
+        out << gamemode << ' ' << blackTimer << ' ' << whiteTimer << ' ';
         for(int i = 0;i<record.size();i++)
         {
             out << record[i] << ' ';

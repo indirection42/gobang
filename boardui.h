@@ -12,6 +12,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QFileDialog>
+#include <QTextStream>
 class BoardUi : public QWidget
 {
     Q_OBJECT
@@ -23,12 +24,17 @@ signals:
     void requestRegret(int player);
     void requestGiveUp(int player);
     void start();
+    void load();
+    void requestSetTime(int blackTime, int whiteTime);
+    void requestSave(int gameMode);
 public slots:
     void newGame(int newGameMode);
+    int loadGame(void);
     void updateInformation(int state,int player,int board[SIZE][SIZE],QVector<int> record);
     void gameOver(int winner);
     void regretBinding();
     void giveupBinding();
+    void save(void);
 protected:
     void paintEvent(QPaintEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);

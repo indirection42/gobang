@@ -29,8 +29,9 @@ public slots:
     int regret(int regreter);
     void giveup(int loser);
     void start();
-    int save();     //can call it at any time
-    int read();     //have to clean the board then call it
+    int save(int gamemode);     //can call it at any time
+    //int read();     //have to clean the board then call it
+    void setTime(int b, int w);
 private slots:
     void changePlayerTimer();
 private:
