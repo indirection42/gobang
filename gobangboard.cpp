@@ -26,7 +26,7 @@ int GobangBoard::play(int x, int y) {
     check(x, y);
     emit boardChange(state,player,board,record);
     if(state==OVER){
-        requestGameover(player);
+        emit requestGameover(player);
     }
     return ERROR_NONE;
   }
@@ -80,10 +80,18 @@ void GobangBoard::giveup(int loser)
 
 void GobangBoard::start(){
     state=INGAME;
+    player = BLACK;
+    memset(board,0,sizeof(board));
+    blackTimer=1800;
+    whiteTimer=1800;
+    record={};
     emit boardChange(state,player,board,record);
+    emit blackTimeChange(blackTimer);
+    emit whiteTimeChange(whiteTimer);
+    if(!this->findChild<QTimer *>("secTimer",Qt::FindDirectChildrenOnly)){
     QTimer *secTimer=new QTimer(this);
     QObject::connect(secTimer,&QTimer::timeout,this,&GobangBoard::changePlayerTimer);
-    secTimer->start(1000);
+    secTimer->start(1000);}
 }
 void GobangBoard::changePlayerTimer(){
     if(state==INGAME){
@@ -128,7 +136,6 @@ int GobangBoard::read(void)
 
 int GobangBoard::save(void)
 {
-    bool ok = 0;
     QString path = QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("save files (*.save)"));
     if(path.length() == 0)
     {

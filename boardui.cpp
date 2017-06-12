@@ -8,12 +8,21 @@ BoardUi::BoardUi(QWidget *parent) : QWidget(parent)
      moveSignY=0;
      addNumber=0;
      memset(boardCopy,0,sizeof(boardCopy));
+     recordCopy={};
      this->setMouseTracking(true);
 }
 
 BoardUi::~BoardUi(){}
 
 void BoardUi::newGame(int newGameMode){
+    stateCopy = IDLE;
+    playerCopy=BLACK;
+    moveSignX=0;
+    moveSignY=0;
+    addNumber=0;
+    memset(boardCopy,0,sizeof(boardCopy));
+    recordCopy={};
+    this->setMouseTracking(true);
     gameMode=newGameMode;
     if(gameMode==LOCALPVP){
         localPlayer=BOTH; //本机人人
@@ -26,6 +35,7 @@ void BoardUi::newGame(int newGameMode){
     else if(gameMode==ONLINEPVP){
         //本机执什么颜色根据某种规则指定
     }
+    update();
 }
 
 void BoardUi::updateInformation(int state,int player,int board[SIZE][SIZE], QVector<int> record){
@@ -33,9 +43,9 @@ void BoardUi::updateInformation(int state,int player,int board[SIZE][SIZE], QVec
     stateCopy=state;
     playerCopy=player;
     recordCopy=record;
-    if(state == INGAME)
+    if((stateCopy == INGAME)|(stateCopy==IDLE))
         addNumber = 0;
-    else if(state == OVER)
+    else if(stateCopy == OVER)
         addNumber = 1;
     update();
 }
@@ -71,8 +81,10 @@ void BoardUi::paintEvent(QPaintEvent *event)
        brush.setColor(Qt::white);
        painter.setBrush(brush);
     }
-    QPointF center(widthSpace*(moveSignX+1),heightSpace*(moveSignY+1));
-    painter.drawEllipse(center,widthSpace/6,heightSpace/6);
+    if(stateCopy==INGAME){
+        QPointF center(widthSpace*(moveSignX+1),heightSpace*(moveSignY+1));
+        painter.drawEllipse(center,widthSpace/6,heightSpace/6);
+    }
     for(int i=0;i<SIZE;i++)
         for(int j=0;j<SIZE;j++){
             QPointF center(widthSpace*(i+1),heightSpace*(j+1));
@@ -109,6 +121,9 @@ void BoardUi::paintEvent(QPaintEvent *event)
 
 void BoardUi::mouseReleaseEvent(QMouseEvent *event)
 {
+    if(stateCopy!=INGAME){
+        return;
+    }
     if(event->button()==Qt::RightButton){ //右键可以请求悔棋
         emit requestRegret(localPlayer);
     }
@@ -136,6 +151,9 @@ void BoardUi::mouseReleaseEvent(QMouseEvent *event)
 
 void BoardUi::mouseMoveEvent(QMouseEvent *event)
 {
+    if(stateCopy!=INGAME){
+        return;
+    }
     if(gameMode!=LOCALPVP){            //除去pvp模式,若当前玩家和本机玩家颜色不一致就什么都不做
         if(playerCopy!=localPlayer)
             return;
@@ -178,9 +196,8 @@ void BoardUi::gameOver(int winner)
         currentHeight=this->height();
         widthSpace=currentWidth/(SIZE+1);
         heightSpace=currentHeight/(SIZE+1);
-        bool ok;
-        QString path = QFileDialog::getSaveFileName(this,tr("Save Screen Shot"),QString(),tr("save files (*.png)"));
-        if(ok == 0 || path.length() == 0)
+        QString path = QFileDialog::getSaveFileName(this,tr("Save Screen Shot"),QString(),tr("PNG Files (*.png)"));
+        if(path.length() == 0)
         {
             QMessageBox::information(NULL, tr("ERROR"), tr("Illegal file name."));
         } else
@@ -193,7 +210,7 @@ void BoardUi::gameOver(int winner)
     {
         //clean the board
         //restart
-    }
+    } 
 }
 
 void BoardUi::regretBinding()
