@@ -6,8 +6,8 @@
 //GameMode
 #define LOCALPVP 6651
 #define LOCALPVC 6652
-#define ONLINEPVP 6653
-
+#define ONLINEPVPBLACK 6653
+#define ONLINEPVPWHITE 6654
 // PLAYER
 #define BLACK 6661
 #define WHITE 6662

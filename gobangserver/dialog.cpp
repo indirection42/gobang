@@ -10,8 +10,8 @@ Dialog::Dialog(QWidget *parent) :
 
     playernum = 0;
 
-    tcpserver = new QTcpServer(this);
-    if (!tcpserver->listen()) {
+    tcpserver = new QTcpServer();
+    if (!tcpserver->listen(QHostAddress::Any,33333)) {
         QMessageBox::critical(this, tr("Gobang Server"),
                               tr("Unable to start the server: %1.")
                               .arg(tcpserver->errorString()));
