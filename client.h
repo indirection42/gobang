@@ -3,11 +3,8 @@
 
 #include <QObject>
 #include <QtNetwork>
+#include "marcros.h"
 
-#define PLAY 'P'
-#define READY 'R'
-#define WAIT 'W'
-#define DISCONNECT 'O'
 
 class client : public QObject
 {
@@ -17,12 +14,17 @@ public:
     void setServer(QString servername,quint16 port);
 
 signals:
-    void RemotePlayerReady();//there is a remote player who is ready to play
+    void RemotePlayerReady(int GameMode);//there is a remote player who is ready to play, and you should start according to the game mode
     void getRemotePlay(int x,int y);//the remote player played
     void waitForReply();//When received this signal, the window should lock the input
     void RemotePlayerdisconnected();//when the other client disconnected, this game is over
+    //void regretRequest();//remote player want to regret
+    //void excuteRegret();//excute the regret operation
 public slots:
     void sendLocalPlay(int x, int y);//use this to send a play
+    //void sendRegretRequest();//use this to send a regret
+    //void agreeRegret();
+    //void disagreeRegret();
 
 private slots:
     void receivedData();
@@ -30,6 +32,7 @@ private slots:
 
 private:
     QTcpSocket *socket;
+    int player;
 signals:
 };
 

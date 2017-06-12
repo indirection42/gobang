@@ -32,8 +32,11 @@ void BoardUi::newGame(int newGameMode){
         localPlayer=BLACK; //暂时默认人永远是黑，AI永远是白
         emit start();
     }
-    else if(gameMode==ONLINEPVP){
+    else if(gameMode==ONLINEPVPBLACK){
         //本机执什么颜色根据某种规则指定
+    }
+    else if(gameMode==ONLINEPVPWHITE){
+
     }
     update();
 }
@@ -233,15 +236,9 @@ void BoardUi::gameOver(int winner)
         currentHeight=this->height();
         widthSpace=currentWidth/(SIZE+1);
         heightSpace=currentHeight/(SIZE+1);
-<<<<<<< HEAD
-//<<<<<<< HEAD
-        QString path = QFileDialog::getSaveFileName(this,tr("Save Screen Shot"),QString(),tr("PNG Files (*.png)"));
-//=======
-        //QString path = QFileDialog::getSaveFileName(this,tr("Save Screen Shot"),QString(),tr("save files (*.png)"));
-//>>>>>>> message
-=======
+
         QString path = QFileDialog::getSaveFileName(this,tr("Save Screen Shot"),QString(),tr("save files (*.png)"));
->>>>>>> master
+
         if(path.length() == 0)
         {
             QMessageBox::information(NULL, tr("ERROR"), tr("Illegal file name."));

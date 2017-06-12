@@ -8,6 +8,7 @@ client::client(QObject *parent) :
     typedef void (QAbstractSocket::*QAbstractSocketErrorSignal)(QAbstractSocket::SocketError);
     connect(socket, static_cast<QAbstractSocketErrorSignal>(&QAbstractSocket::error),
             this, &client::displayError);
+    player = ONLINEPVPBLACK;
 }
 void client::setServer(QString servername, quint16 port)
 {
@@ -67,10 +68,11 @@ void client::receivedData()
      }
      else if(status==READY)
      {
-         RemotePlayerReady();
+         RemotePlayerReady(player);
      }
      else if(status==WAIT)
      {
+         player = ONLINEPVPWHITE;
          waitForReply();
      }
      else if(status==DISCONNECT)
