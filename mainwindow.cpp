@@ -41,6 +41,11 @@ void MainWindow::on_actionLocal_PvP_triggered()
         QObject::connect(ui->boardui,SIGNAL(start(void)),gobangboard,SLOT(start(void)));
         QObject::connect(ui->regretButton,SIGNAL(clicked(void)),ui->boardui,SLOT(regretBinding(void)));
         QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(giveupBinding(void)));
+        QObject::connect(ui->boardui,SIGNAL(requestSetTime(int,int)),gobangboard,SLOT(setTime(int,int)));
+        //QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(loadGame(void)));
+        //QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(save(void)));
+        //QObject::connect(ui->actionSave_Game,SIGNAL(clicked(void)),ui->boardui,SLOT(save(void)));
+        //QObject::connect(ui->boardui,SIGNAL(requestSave(int)),gobangboard,SLOT(save(int)));
     }
     ui->boardui->newGame(LOCALPVP);
 }

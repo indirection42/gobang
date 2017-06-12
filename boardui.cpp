@@ -38,6 +38,43 @@ void BoardUi::newGame(int newGameMode){
     update();
 }
 
+int BoardUi::loadGame(void){
+    QString path = QFileDialog::getOpenFileName(this, tr("Choose your save"), ".", tr("Saving Files(*.save)"));
+    if(path.length() == 0)
+    {
+        QMessageBox::information(NULL, tr("Path"), tr("You didn't select any files."));
+        return ERROR_READ;
+    } else
+    {
+        QFile file1(path);
+        QTextStream out1(&file1);
+        file1.open(QFile::ReadOnly);
+        if(!file1.isOpen())
+        {
+            printf( "nope\n");
+            return ERROR_READ;
+        }
+        int b, w;
+        out1 >> gameMode >> b >> w;
+        emit requestSetTime(b, w);
+        while(!out1.atEnd())
+        {
+            qint32 i;
+            out1 >> i;
+            requestPlay(i/100,i%100);
+            //qDebug() << i;
+        }
+        file1.close();
+        return ERROR_NONE;
+    }
+    update();
+}
+
+void BoardUi::save(void)
+{
+    emit requestSave(gameMode);
+}
+
 void BoardUi::updateInformation(int state,int player,int board[SIZE][SIZE], QVector<int> record){
     memcpy(boardCopy,board,sizeof(boardCopy));
     stateCopy=state;
@@ -196,7 +233,11 @@ void BoardUi::gameOver(int winner)
         currentHeight=this->height();
         widthSpace=currentWidth/(SIZE+1);
         heightSpace=currentHeight/(SIZE+1);
+//<<<<<<< HEAD
         QString path = QFileDialog::getSaveFileName(this,tr("Save Screen Shot"),QString(),tr("PNG Files (*.png)"));
+//=======
+        //QString path = QFileDialog::getSaveFileName(this,tr("Save Screen Shot"),QString(),tr("save files (*.png)"));
+//>>>>>>> message
         if(path.length() == 0)
         {
             QMessageBox::information(NULL, tr("ERROR"), tr("Illegal file name."));
