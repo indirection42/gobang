@@ -178,9 +178,8 @@ void BoardUi::gameOver(int winner)
         currentHeight=this->height();
         widthSpace=currentWidth/(SIZE+1);
         heightSpace=currentHeight/(SIZE+1);
-        bool ok;
         QString path = QFileDialog::getSaveFileName(this,tr("Save Screen Shot"),QString(),tr("save files (*.png)"));
-        if(ok == 0 || path.length() == 0)
+        if(path.length() == 0)
         {
             QMessageBox::information(NULL, tr("ERROR"), tr("Illegal file name."));
         } else
