@@ -4,6 +4,12 @@
 #include <QWidget>
 #include <QVector>
 #include <QTimer>
+#include <QFile>
+#include <QDataStream>
+#include <QtDebug>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QInputDialog>
 class GobangBoard:public QWidget
 {
     Q_OBJECT
@@ -14,13 +20,18 @@ public:
 //    int get_Player();
 //    int (*get_Board())[SIZE];
 signals:
-    void boardChange(int state,int player,int board[SIZE][SIZE]);
+    void boardChange(int state,int player,int board[SIZE][SIZE],  QVector<int> record);
     void blackTimeChange(int blackTimer);
     void whiteTimeChange(int whiteTimer);
+    void requestGameover(int winner);    //emit the signal when the game is over
 public slots:
     int play(int x, int y);
-    int regret();
-    void startTimer();
+    int regret(int regreter);
+    void giveup(int loser);
+    void start();
+    int save(int gamemode);     //can call it at any time
+    //int read();     //have to clean the board then call it
+    void setTime(int b, int w);
 private slots:
     void changePlayerTimer();
 private:

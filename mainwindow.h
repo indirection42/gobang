@@ -13,6 +13,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+
+    void on_actionQuit_Application_triggered();
+
+    void on_actionLocal_PvP_triggered();
+
 private:
     Ui::MainWindow *ui;
 };
