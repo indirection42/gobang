@@ -8,6 +8,7 @@
 #define LOCALPVC 6652
 #define ONLINEPVPBLACK 6653
 #define ONLINEPVPWHITE 6654
+
 // PLAYER
 #define BLACK 6661
 #define WHITE 6662
@@ -16,6 +17,15 @@
 #define OVER 6671
 #define INGAME 6672
 #define IDLE 6673
+
+// NETWORK COMMUNICATION
+#define PLAY 'P'
+#define READY 'R'
+#define WAIT 'W'
+#define DISCONNECT 'O'
+#define REGRET 'G'
+#define AGREE 'A'
+#define DISAGREE 'D'
 
 // ERROR
 #define ERROR_NONE 6680 // no error
