@@ -27,21 +27,22 @@ void MainWindow::on_actionLocal_PvP_triggered()
 {
     if(!this->findChild<GobangBoard *>(QString(),Qt::FindDirectChildrenOnly)){
         GobangBoard *gobangboard=new GobangBoard(this);
+        //gobangboard >> board->ui
         QObject::connect(gobangboard,&GobangBoard::boardChange,ui->boardui,&BoardUi::updateInformation);
+        QObject::connect(gobangboard,SIGNAL(requestGameover(int)),ui->boardui,SLOT(gameOver(int)));
+        // board->ui >> gobangboard
+        QObject::connect(ui->boardui,SIGNAL(start(void)),gobangboard,SLOT(start(void)));
         QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),gobangboard,SLOT(play(int,int)));
-        QObject::connect(ui->boardui,&BoardUi::requestRegret,gobangboard,&GobangBoard::regret);
+        QObject::connect(ui->boardui,SIGNAL(requestRegret(int)),gobangboard,SLOT(regret(int)));
         QObject::connect(ui->boardui,SIGNAL(requestGiveUp(int)),gobangboard,SLOT(giveup(int)));
+        QObject::connect(ui->boardui,SIGNAL(requestLoadBoard(int,int,QVector<int>)),gobangboard,SLOT(loadBoard(int,int,QVector<int>)));
+        QObject::connect(ui->boardui,SIGNAL(requestSave(int)),gobangboard,SLOT(save(int)));
+        //gobangboard >> ui->other_widgets
         QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->blackLCD),SLOT(display(int)));
         QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->whiteLCD),SLOT(display(int)));
-        QObject::connect(gobangboard,SIGNAL(requestGameover(int)),ui->boardui,SLOT(gameOver(int)));
-        QObject::connect(ui->boardui,SIGNAL(start(void)),gobangboard,SLOT(start(void)));
-//        QObject::connect(ui->regretButton,SIGNAL(clicked(void)),ui->boardui,SLOT(regretBinding(void)));
+        //ui->buttons >> ui->boardui
+        QObject::connect(ui->regretButton,SIGNAL(clicked(void)),ui->boardui,SLOT(regretBinding(void)));
         QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(giveupBinding(void)));
-        QObject::connect(ui->boardui,SIGNAL(requestSetTime(int,int)),gobangboard,SLOT(setTime(int,int)));
-        //QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(loadGame(void)));
-        //QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(save(void)));
-        //QObject::connect(ui->actionSave_Game,SIGNAL(clicked(void)),ui->boardui,SLOT(save(void)));
-        QObject::connect(ui->boardui,SIGNAL(requestSave(int)),gobangboard,SLOT(save(int)));
     }
     ui->boardui->newGame(LOCALPVP);
 }
@@ -60,21 +61,29 @@ void MainWindow::on_actionOnline_PvP_triggered()
 {
     if(!this->findChild<GobangBoard *>(QString(),Qt::FindDirectChildrenOnly)){
         GobangBoard *gobangboard=new GobangBoard(this);
+        //gobangboard >> board->ui
         QObject::connect(gobangboard,&GobangBoard::boardChange,ui->boardui,&BoardUi::updateInformation);
+        QObject::connect(gobangboard,SIGNAL(requestGameover(int)),ui->boardui,SLOT(gameOver(int)));
+        // board->ui >> gobangboard
         QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),gobangboard,SLOT(play(int,int)));
         QObject::connect(ui->boardui,&BoardUi::requestRegret,gobangboard,&GobangBoard::regret);
         QObject::connect(ui->boardui,SIGNAL(requestGiveUp(int)),gobangboard,SLOT(giveup(int)));
-        QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->blackLCD),SLOT(display(int)));
-        QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->whiteLCD),SLOT(display(int)));
-        QObject::connect(gobangboard,SIGNAL(requestGameover(int)),ui->boardui,SLOT(gameOver(int)));
         QObject::connect(ui->boardui,SIGNAL(start(void)),gobangboard,SLOT(start(void)));
-        QObject::connect(ui->regretButton,SIGNAL(clicked(void)),ui->boardui,SLOT(regretBinding(void)));
-        QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(giveupBinding(void)));
         QObject::connect(ui->boardui,SIGNAL(requestSetTime(int,int)),gobangboard,SLOT(setTime(int,int)));
         QObject::connect(ui->boardui,SIGNAL(requestSave(int)),gobangboard,SLOT(save(int)));
-        client *cli = new client(this);
-        cli->setServer("localhost",33333);//according to the server's IP and port
-        QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),cli,SLOT(sendLocalPlay(int,int)));
-        QObject::connect(cli,SIGNAL(getRemotePlay(int,int)),gobangboard,SLOT(play(int,int)));
+        //gobangboard >> ui->other_widgets
+        QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->blackLCD),SLOT(display(int)));
+        QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->whiteLCD),SLOT(display(int)));
+
+        if(!this->findChild<client *>(QString(),Qt::FindDirectChildrenOnly)){
+            client *cli = new client(this);
+            cli->setServer("localhost",33333);//according to the server's IP and port
+            QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),cli,SLOT(sendLocalPlay(int,int)));
+            QObject::connect(cli,SIGNAL(getRemotePlay(int,int)),gobangboard,SLOT(play(int,int)));
+            QObject::connect(cli,SIGNAL(RemotePlayerReady(int)),ui->boardui,SLOT(newGame(int)));
+            //        QObject::connect(ui->regretButton,SIGNAL(clicked(void)),ui->boardui,SLOT(regretBinding(void)));
+            //        QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(giveupBinding(void)));
         }
+    }
+
 }

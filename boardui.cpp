@@ -62,16 +62,18 @@ int BoardUi::loadGame(void){
         int b, w;
         int gameMode;
         out1 >> gameMode >> b >> w;
+        if(gameMode!=LOCALPVC&&gameMode!=LOCALPVP){
+            return ERROR_READ;
+        }
         newGame(gameMode);
-        emit requestSetTime(b, w);
+        QVector<int> record;
         while(!out1.atEnd())
         {
             qint32 i;
             out1 >> i;
-            requestPlay(i/100,i%100);
-
-            //qDebug() << i;
+            record.push_back(i);
         }
+        emit requestLoadBoard(b, w,record);
         file1.close();
         return ERROR_NONE;
     }

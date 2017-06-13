@@ -66,6 +66,7 @@ void Dialog::newPlayerConnected()
         connect(player_BLACK, &QIODevice::readyRead, this, &Dialog::dataFromBLACK);
         block.push_back(READY);
         player_BLACK->write(block);
+        player_WHITE->write(block);
         qDebug()<<"player_black connected.Game starts!";
 
         playernum = 2;

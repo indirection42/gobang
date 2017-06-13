@@ -75,6 +75,7 @@ void GobangBoard::giveup(int loser)
         else
             winner=BLACK;
     }
+    emit boardChange(state,player,board,record);
     emit requestGameover(winner);
 }
 
@@ -88,7 +89,7 @@ void GobangBoard::start(){
     emit boardChange(state,player,board,record);
     emit blackTimeChange(blackTimer);
     emit whiteTimeChange(whiteTimer);
-    if(!this->findChild<QTimer *>("secTimer",Qt::FindDirectChildrenOnly)){
+    if(!this->findChild<QTimer *>(QString(),Qt::FindDirectChildrenOnly)){
     QTimer *secTimer=new QTimer(this);
     QObject::connect(secTimer,&QTimer::timeout,this,&GobangBoard::changePlayerTimer);
     secTimer->start(1000);}
@@ -105,10 +106,15 @@ void GobangBoard::changePlayerTimer(){
         }
     }
 }
- void GobangBoard::setTime(int b, int w)
+ void GobangBoard::loadBoard(int b, int w,QVector<int> record)
 {
     blackTimer = b;
     whiteTimer = w;
+    for(auto i:record){
+        play(i/100,i%100);
+    }
+    emit blackTimeChange(blackTimer);
+    emit whiteTimeChange(whiteTimer);
 }
 
 int GobangBoard::save(int gamemode)
