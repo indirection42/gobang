@@ -74,16 +74,18 @@ void MainWindow::on_actionOnline_PvP_triggered()
         //gobangboard >> ui->other_widgets
         QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->blackLCD),SLOT(display(int)));
         QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->whiteLCD),SLOT(display(int)));
-
+        client *cli;
         if(!this->findChild<client *>(QString(),Qt::FindDirectChildrenOnly)){
-            client *cli = new client(this);
-            cli->setServer("localhost",33333);//according to the server's IP and port
+            cli= new client(this);
+
             QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),cli,SLOT(sendLocalPlay(int,int)));
             QObject::connect(cli,SIGNAL(getRemotePlay(int,int)),gobangboard,SLOT(play(int,int)));
             QObject::connect(cli,SIGNAL(RemotePlayerReady(int)),ui->boardui,SLOT(newGame(int)));
-            //        QObject::connect(ui->regretButton,SIGNAL(clicked(void)),ui->boardui,SLOT(regretBinding(void)));
+            QObject::connect(ui->regretButton,SIGNAL(clicked(void)),cli,SLOT(sendRegretRequest()));
+            QObject::connect(cli,SIGNAL(excuteRegret(int)),gobangboard,SLOT(regret(int)));
             //        QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(giveupBinding(void)));
         }
+        cli->setServer("localhost",33333);//according to the server's IP and port
     }
 
 }
