@@ -18,13 +18,11 @@ signals:
     void getRemotePlay(int x,int y);//the remote player played
     void waitForReply();//When received this signal, the window should lock the input
     void RemotePlayerdisconnected();//when the other client disconnected, this game is over
-    //void regretRequest();//remote player want to regret
-    //void excuteRegret();//excute the regret operation
+    void excuteRegret(int regreter);//excute the regret operation
+
 public slots:
     void sendLocalPlay(int x, int y);//use this to send a play
-    //void sendRegretRequest();//use this to send a regret
-    //void agreeRegret();
-    //void disagreeRegret();
+    void sendRegretRequest();//use this to send a regret
 
 private slots:
     void receivedData();
@@ -33,7 +31,8 @@ private slots:
 private:
     QTcpSocket *socket;
     int player;
-signals:
+
+    void regretRequest();//remote player want to regret
 };
 
 #endif // CLIENT_H
