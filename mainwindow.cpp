@@ -83,7 +83,8 @@ void MainWindow::on_actionOnline_PvP_triggered()
             QObject::connect(cli,SIGNAL(RemotePlayerReady(int)),ui->boardui,SLOT(newGame(int)));
             QObject::connect(ui->regretButton,SIGNAL(clicked(void)),cli,SLOT(sendRegretRequest()));
             QObject::connect(cli,SIGNAL(excuteRegret(int)),gobangboard,SLOT(regret(int)));
-            //        QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(giveupBinding(void)));
+            QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),cli,SLOT(sendGiveupRequest()));
+            QObject::connect(cli,SIGNAL(excuteGiveup(int)),gobangboard,SLOT(giveup(int)));
         }
         cli->setServer("localhost",33333);//according to the server's IP and port
     }

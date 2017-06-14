@@ -26,6 +26,7 @@
 #define REGRET 'G'
 #define AGREE 'A'
 #define DISAGREE 'D'
+#define GIVEUP 'I'
 
 // ERROR
 #define ERROR_NONE 6680 // no error
