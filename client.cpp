@@ -89,6 +89,12 @@ void client::receivedData()
         else
             excuteRegret(WHITE);
         break;
+    case GIVEUP:
+        if(player==ONLINEPVPBLACK)
+            excuteGiveup(WHITE);
+        else
+            excuteGiveup(BLACK);
+        break;
     default:
         break;
     }
@@ -131,4 +137,18 @@ void client::regretRequest()
         socket->write(data);
     }
 
+}
+void client::sendGiveupRequest()
+{
+    if(player==ONLINEPVPBLACK)
+        excuteGiveup(BLACK);
+    else
+        excuteGiveup(WHITE);
+
+    char status = GIVEUP;
+    QByteArray data;
+
+    data.push_back(status);
+
+    socket->write(data);
 }
