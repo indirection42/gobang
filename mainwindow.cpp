@@ -72,7 +72,7 @@ void MainWindow::on_actionLocal_PvC_triggered()
         if(!this->findChild<GobangAI *>(QString(),Qt::FindDirectChildrenOnly))
         {
             ai = new GobangAI(WHITE);
-            QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),ai,SLOT(makeDecision(int,int)));
+            QObject::connect(gobangboard,&GobangBoard::boardChange,ai,&GobangAI::makeDecision);
             QObject::connect(ai,SIGNAL(aiRequestPlay(int,int)),gobangboard,SLOT(play(int,int)));
         }
     }

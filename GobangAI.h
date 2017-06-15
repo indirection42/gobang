@@ -9,6 +9,7 @@
 #ifndef GobangAI_hpp
 #define GobangAI_hpp
 #include "marcros.h"
+#include <QVector>
 #include <QObject>
 #include <iostream>
 #include <ctime>
@@ -57,15 +58,13 @@ public:
 signals:
     void aiRequestPlay(int x,int y);
 public slots:
-    void updateBoard(int x,int y);
-    void makeDecision(int ex,int ey); //对当前盘面做出决策
+    void makeDecision(int state,int player,int pBoard[SIZE][SIZE],QVector<int> record); //对当前盘面做出决策
 public:
     GobangAI(int c,int l);
     GobangAI();
     GobangAI(int AIcolor);
     void setLevel(int l);
-    void updateBoard(int pBoard[SIZE][SIZE]);   // 接收整个盘面信息
-    void updateBoard(GBPoint p,int teamColor);  // 单步更新
+    void updateBoard(int pBoard[SIZE][SIZE]);
     /* Make Decision*/
 private:
     int getPattern(int board[SIZE][SIZE],int teamColor,int x,int y,int dx,int dy);

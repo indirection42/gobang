@@ -8,6 +8,7 @@
 #include "GobangAI.h"
 
 
+
 int GobangAI::PatternScore[13] = 
     {
         
@@ -33,10 +34,6 @@ void GobangAI::updateBoard(int pBoard[SIZE][SIZE])
     memcpy(boardCopy,pBoard,sizeof(boardCopy));
 }
 
-void GobangAI::updateBoard(int x,int y)
-{
-    boardCopy[x][y] = enemy;
-}
 
 GobangAI::GobangAI(){
     memset(boardCopy,0,sizeof(boardCopy));
@@ -225,9 +222,13 @@ void GobangAI::getCandidatePos(int board[SIZE][SIZE],bool candi[SIZE][SIZE])
 }
 
 
-void GobangAI::makeDecision(int ex,int ey)
+void GobangAI::makeDecision(int state,int player,int pBoard[SIZE][SIZE],QVector<int> record)
 {
-    updateBoard(ex,ey);
+    updateBoard(pBoard);
+
+    if(player!=team||state!=INGAME)
+        return;
+
     if(steps==0&&team==BLACK)
     {
         steps++;
@@ -243,7 +244,6 @@ void GobangAI::makeDecision(int ex,int ey)
     int x = bestPos[randNumber].x;
     int y = bestPos[randNumber].y;
     emit aiRequestPlay(x,y);
-    updateBoard(x,y);
 }
 
 #define MAX(a,b) ((a)>(b)?(a):(b))
