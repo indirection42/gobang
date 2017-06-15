@@ -25,6 +25,8 @@ private slots:
 
     void on_actionOnline_PvP_triggered();
 
+    void on_actionLocal_PvC_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

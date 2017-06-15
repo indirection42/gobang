@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "gobangboard.h"
 #include "boardui.h"
+#include "GobangAI.h"
 #include "client.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -45,6 +46,37 @@ void MainWindow::on_actionLocal_PvP_triggered()
         QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(giveupBinding(void)));
     }
     ui->boardui->newGame(LOCALPVP);
+}
+
+void MainWindow::on_actionLocal_PvC_triggered()
+{
+    if(!this->findChild<GobangBoard *>(QString(),Qt::FindDirectChildrenOnly)){
+        GobangBoard *gobangboard=new GobangBoard(this);
+        //gobangboard >> board->ui
+        QObject::connect(gobangboard,&GobangBoard::boardChange,ui->boardui,&BoardUi::updateInformation);
+        QObject::connect(gobangboard,SIGNAL(requestGameover(int)),ui->boardui,SLOT(gameOver(int)));
+        // board->ui >> gobangboard
+        QObject::connect(ui->boardui,SIGNAL(start(void)),gobangboard,SLOT(start(void)));
+        QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),gobangboard,SLOT(play(int,int)));
+        QObject::connect(ui->boardui,SIGNAL(requestRegret(int)),gobangboard,SLOT(regret(int)));
+        QObject::connect(ui->boardui,SIGNAL(requestGiveUp(int)),gobangboard,SLOT(giveup(int)));
+        QObject::connect(ui->boardui,SIGNAL(requestLoadBoard(int,int,QVector<int>)),gobangboard,SLOT(loadBoard(int,int,QVector<int>)));
+        QObject::connect(ui->boardui,SIGNAL(requestSave(int)),gobangboard,SLOT(save(int)));
+        //gobangboard >> ui->other_widgets
+        QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->blackLCD),SLOT(display(int)));
+        QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->whiteLCD),SLOT(display(int)));
+        //ui->buttons >> ui->boardui
+        QObject::connect(ui->regretButton,SIGNAL(clicked(void)),ui->boardui,SLOT(regretBinding(void)));
+        QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(giveupBinding(void)));
+        GobangAI* ai;
+        if(!this->findChild<GobangAI *>(QString(),Qt::FindDirectChildrenOnly))
+        {
+            ai = new GobangAI(WHITE);
+            QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),ai,SLOT(makeDecision(int,int)));
+            QObject::connect(ai,SIGNAL(aiRequestPlay(int,int)),gobangboard,SLOT(play(int,int)));
+        }
+    }
+    ui->boardui->newGame(LOCALPVC);
 }
 
 void MainWindow::on_actionLoad_Game_triggered()

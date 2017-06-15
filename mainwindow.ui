@@ -20,7 +20,7 @@
       <x>501</x>
       <y>9</y>
       <width>66</width>
-      <height>54</height>
+      <height>58</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
@@ -149,7 +149,7 @@
      <x>0</x>
      <y>0</y>
      <width>576</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">

@@ -28,14 +28,16 @@ SOURCES += \
         mainwindow.cpp \
     gobangboard.cpp \
     boardui.cpp \
-    client.cpp
+    client.cpp \
+    GobangAI.cpp
 
 HEADERS += \
         mainwindow.h \
     gobangboard.h \
     boardui.h \
     marcros.h \
-    client.h
+    client.h \
+    GobangAI.h
 
 FORMS += \
         mainwindow.ui
