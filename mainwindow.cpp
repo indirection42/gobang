@@ -58,6 +58,7 @@ void MainWindow::on_actionLocal_PvP_triggered()
 
 void MainWindow::on_actionLocal_PvC_triggered()
 {
+
     GobangBoard *gobangboard;
     if(!(gobangboard=this->findChild<GobangBoard *>(QString(),Qt::FindDirectChildrenOnly))){
         gobangboard=new GobangBoard(this);
@@ -106,7 +107,7 @@ void MainWindow::on_actionSave_Game_triggered()
 
 void MainWindow::on_actionOnline_PvP_triggered()
 {
-
+    client *cli;
     GobangBoard *gobangboard;
     if(!(gobangboard=this->findChild<GobangBoard *>(QString(),Qt::FindDirectChildrenOnly))){
         gobangboard=new GobangBoard(this);
@@ -123,7 +124,7 @@ void MainWindow::on_actionOnline_PvP_triggered()
         //gobangboard >> ui->other_widgets
         QObject::connect(gobangboard,SIGNAL(blackTimeChange(int)),(this->ui->blackLCD),SLOT(display(int)));
         QObject::connect(gobangboard,SIGNAL(whiteTimeChange(int)),(this->ui->whiteLCD),SLOT(display(int)));
-        client *cli;
+
         if(!this->findChild<client *>(QString(),Qt::FindDirectChildrenOnly)){
             cli= new client(this);
 
@@ -135,7 +136,7 @@ void MainWindow::on_actionOnline_PvP_triggered()
             QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),cli,SLOT(sendGiveupRequest()));
             QObject::connect(cli,SIGNAL(excuteGiveup(int)),gobangboard,SLOT(giveup(int)));
         }
-        cli->setServer("localhost",33333);//according to the server's IP and port
+
     }
     GobangAI* findAI;
     if((findAI = this->findChild<GobangAI *>(QString(),Qt::FindDirectChildrenOnly)))
@@ -143,6 +144,8 @@ void MainWindow::on_actionOnline_PvP_triggered()
         QObject::disconnect(findAI,0,0,0);
         QObject::disconnect(gobangboard,0,findAI,0);
     }
-
+    if(cli=this->findChild<client *>(QString(),Qt::FindDirectChildrenOnly)){
+        cli->setServer("localhost",33333);//according to the server's IP and port
+    }
 
 }
