@@ -110,8 +110,8 @@ void BoardUi::paintEvent(QPaintEvent *event)
     QVector<QLine> verticalLines;
     QVector<QLine> horizontalLines;
     for(int i=0;i<=SIZE+1;i++){
-        QLine verticalLine(widthSpace*i,0,widthSpace*i,currentHeight);
-        QLine horizontalLine(0,heightSpace*i,currentWidth,heightSpace*i);
+        QLine verticalLine(widthSpace*i,0,widthSpace*i,heightSpace*(SIZE+1));
+        QLine horizontalLine(0,heightSpace*i,widthSpace*(SIZE+1),heightSpace*i);
         verticalLines.append(verticalLine);
         horizontalLines.append(horizontalLine);
     }

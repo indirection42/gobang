@@ -110,8 +110,8 @@ void GobangBoard::changePlayerTimer(){
 {
     blackTimer = b;
     whiteTimer = w;
-    for(auto i:record){
-        play(i/100,i%100);
+    for(int i=0;i<record.size();i++){
+        play(record[i]/100,record[i]%100);
     }
     emit blackTimeChange(blackTimer);
     emit whiteTimeChange(whiteTimer);

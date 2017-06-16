@@ -31,7 +31,7 @@ public slots:
     void start();
     int save(int gamemode);     //can call it at any time
     //int read();     //have to clean the board then call it
-    void loadBoard(int b, int w,QVector<int>);
+    void loadBoard(int b, int w,QVector<int> record);
 private slots:
     void changePlayerTimer();
 private:
