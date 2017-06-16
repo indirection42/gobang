@@ -26,8 +26,9 @@ void MainWindow::on_actionQuit_Application_triggered()
 
 void MainWindow::on_actionLocal_PvP_triggered()
 {
-    if(!this->findChild<GobangBoard *>(QString(),Qt::FindDirectChildrenOnly)){
-        GobangBoard *gobangboard=new GobangBoard(this);
+    GobangBoard *gobangboard;
+    if(!(gobangboard=this->findChild<GobangBoard *>(QString(),Qt::FindDirectChildrenOnly))){
+        gobangboard=new GobangBoard(this);
         //gobangboard >> board->ui
         QObject::connect(gobangboard,&GobangBoard::boardChange,ui->boardui,&BoardUi::updateInformation);
         QObject::connect(gobangboard,SIGNAL(requestGameover(int)),ui->boardui,SLOT(gameOver(int)));
@@ -44,14 +45,22 @@ void MainWindow::on_actionLocal_PvP_triggered()
         //ui->buttons >> ui->boardui
         QObject::connect(ui->regretButton,SIGNAL(clicked(void)),ui->boardui,SLOT(regretBinding(void)));
         QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(giveupBinding(void)));
+        gobangboard->setParent(this);
+    }
+    GobangAI* findAI;
+    if((findAI = this->findChild<GobangAI *>(QString(),Qt::FindDirectChildrenOnly)))
+    {
+        QObject::disconnect(findAI,0,0,0);
+        QObject::disconnect(gobangboard,0,findAI,0);
     }
     ui->boardui->newGame(LOCALPVP);
 }
 
 void MainWindow::on_actionLocal_PvC_triggered()
 {
-    if(!this->findChild<GobangBoard *>(QString(),Qt::FindDirectChildrenOnly)){
-        GobangBoard *gobangboard=new GobangBoard(this);
+    GobangBoard *gobangboard;
+    if(!(gobangboard=this->findChild<GobangBoard *>(QString(),Qt::FindDirectChildrenOnly))){
+        gobangboard=new GobangBoard(this);
         //gobangboard >> board->ui
         QObject::connect(gobangboard,&GobangBoard::boardChange,ui->boardui,&BoardUi::updateInformation);
         QObject::connect(gobangboard,SIGNAL(requestGameover(int)),ui->boardui,SLOT(gameOver(int)));
@@ -68,14 +77,20 @@ void MainWindow::on_actionLocal_PvC_triggered()
         //ui->buttons >> ui->boardui
         QObject::connect(ui->regretButton,SIGNAL(clicked(void)),ui->boardui,SLOT(regretBinding(void)));
         QObject::connect(ui->giveupButton,SIGNAL(clicked(void)),ui->boardui,SLOT(giveupBinding(void)));
-        GobangAI* ai;
-        if(!this->findChild<GobangAI *>(QString(),Qt::FindDirectChildrenOnly))
-        {
-            ai = new GobangAI(WHITE);
-            QObject::connect(ui->boardui,SIGNAL(requestPlay(int,int)),ai,SLOT(makeDecision(int,int)));
-            QObject::connect(ai,SIGNAL(aiRequestPlay(int,int)),gobangboard,SLOT(play(int,int)));
-        }
+        gobangboard->setParent(this);
     }
+    GobangAI* ai=NULL;
+    if(!(ai=this->findChild<GobangAI *>(QString(),Qt::FindDirectChildrenOnly)))
+    {
+        ai = new GobangAI(WHITE);
+        ai->setParent(this);
+    }
+
+    QObject::disconnect(ai,0,0,0);
+    QObject::disconnect(gobangboard,0,ai,0);
+
+    QObject::connect(gobangboard,&GobangBoard::boardChange,ai,&GobangAI::makeDecision);
+    QObject::connect(ai,SIGNAL(aiRequestPlay(int,int)),gobangboard,SLOT(play(int,int)));
     ui->boardui->newGame(LOCALPVC);
 }
 
@@ -91,8 +106,10 @@ void MainWindow::on_actionSave_Game_triggered()
 
 void MainWindow::on_actionOnline_PvP_triggered()
 {
-    if(!this->findChild<GobangBoard *>(QString(),Qt::FindDirectChildrenOnly)){
-        GobangBoard *gobangboard=new GobangBoard(this);
+
+    GobangBoard *gobangboard;
+    if(!(gobangboard=this->findChild<GobangBoard *>(QString(),Qt::FindDirectChildrenOnly))){
+        gobangboard=new GobangBoard(this);
         //gobangboard >> board->ui
         QObject::connect(gobangboard,&GobangBoard::boardChange,ui->boardui,&BoardUi::updateInformation);
         QObject::connect(gobangboard,SIGNAL(requestGameover(int)),ui->boardui,SLOT(gameOver(int)));
@@ -120,5 +137,12 @@ void MainWindow::on_actionOnline_PvP_triggered()
         }
         cli->setServer("localhost",33333);//according to the server's IP and port
     }
+    GobangAI* findAI;
+    if((findAI = this->findChild<GobangAI *>(QString(),Qt::FindDirectChildrenOnly)))
+    {
+        QObject::disconnect(findAI,0,0,0);
+        QObject::disconnect(gobangboard,0,findAI,0);
+    }
+
 
 }

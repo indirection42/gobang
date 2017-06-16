@@ -8,6 +8,7 @@
 #include "GobangAI.h"
 
 
+
 int GobangAI::PatternScore[13] = 
     {
         
@@ -33,16 +34,12 @@ void GobangAI::updateBoard(int pBoard[SIZE][SIZE])
     memcpy(boardCopy,pBoard,sizeof(boardCopy));
 }
 
-void GobangAI::updateBoard(int x,int y)
-{
-    boardCopy[x][y] = enemy;
-}
 
 GobangAI::GobangAI(){
     memset(boardCopy,0,sizeof(boardCopy));
     level = 1;
     team = BLACK;
-    steps = 0;
+    //steps = 0;
     enemy = team==BLACK?WHITE:BLACK;
 }
 
@@ -51,7 +48,7 @@ GobangAI::GobangAI(int t,int l)
     memset(boardCopy,0,sizeof(boardCopy));
     level = l;
     team = t;       //AI方
-    steps = 0;
+    //steps = 0;
     enemy = team==BLACK?WHITE:BLACK;
 }
 
@@ -60,7 +57,7 @@ GobangAI::GobangAI(int AIcolor)
     memset(boardCopy,0,sizeof(boardCopy));
     level = 2;
     team = AIcolor;       //AI方
-    steps = 0;
+    //steps = 0;
     enemy = team==BLACK?WHITE:BLACK;
 }
 
@@ -225,17 +222,19 @@ void GobangAI::getCandidatePos(int board[SIZE][SIZE],bool candi[SIZE][SIZE])
 }
 
 
-void GobangAI::makeDecision(int ex,int ey)
+void GobangAI::makeDecision(int state,int player,int pBoard[SIZE][SIZE],QVector<int> record)
 {
-    updateBoard(ex,ey);
-    if(steps==0&&team==BLACK)
+    updateBoard(pBoard);
+
+    if(player!=team||state!=INGAME)
+        return;
+
+    if(record.size()==0&&team==BLACK)
     {
-        steps++;
         emit aiRequestPlay(7,7);
         return;
     }
 
-    steps++;
     vector<GBPoint> bestPos;
 
     alphaBeta(boardCopy,INFINITY,-INFINITY,team,level,bestPos);
@@ -243,7 +242,6 @@ void GobangAI::makeDecision(int ex,int ey)
     int x = bestPos[randNumber].x;
     int y = bestPos[randNumber].y;
     emit aiRequestPlay(x,y);
-    updateBoard(x,y);
 }
 
 #define MAX(a,b) ((a)>(b)?(a):(b))
