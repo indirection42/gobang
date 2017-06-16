@@ -20,7 +20,7 @@ public:
 //    int get_Player();
 //    int (*get_Board())[SIZE];
 signals:
-    void boardChange(int state,int player,int board[SIZE][SIZE],  QVector<int> record);
+    void boardChange(int state,int player,int pBoard[SIZE][SIZE],QVector<int> record);
     void blackTimeChange(int blackTimer);
     void whiteTimeChange(int whiteTimer);
     void requestGameover(int winner);    //emit the signal when the game is over
