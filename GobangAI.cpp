@@ -39,7 +39,7 @@ GobangAI::GobangAI(){
     memset(boardCopy,0,sizeof(boardCopy));
     level = 1;
     team = BLACK;
-    steps = 0;
+    //steps = 0;
     enemy = team==BLACK?WHITE:BLACK;
 }
 
@@ -48,7 +48,7 @@ GobangAI::GobangAI(int t,int l)
     memset(boardCopy,0,sizeof(boardCopy));
     level = l;
     team = t;       //AI方
-    steps = 0;
+    //steps = 0;
     enemy = team==BLACK?WHITE:BLACK;
 }
 
@@ -57,7 +57,7 @@ GobangAI::GobangAI(int AIcolor)
     memset(boardCopy,0,sizeof(boardCopy));
     level = 2;
     team = AIcolor;       //AI方
-    steps = 0;
+    //steps = 0;
     enemy = team==BLACK?WHITE:BLACK;
 }
 
@@ -229,14 +229,12 @@ void GobangAI::makeDecision(int state,int player,int pBoard[SIZE][SIZE],QVector<
     if(player!=team||state!=INGAME)
         return;
 
-    if(steps==0&&team==BLACK)
+    if(record.size()==0&&team==BLACK)
     {
-        steps++;
         emit aiRequestPlay(7,7);
         return;
     }
 
-    steps++;
     vector<GBPoint> bestPos;
 
     alphaBeta(boardCopy,INFINITY,-INFINITY,team,level,bestPos);

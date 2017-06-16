@@ -64,7 +64,7 @@ public:
     GobangAI();
     GobangAI(int AIcolor);
     void setLevel(int l);
-    void updateBoard(int pBoard[SIZE][SIZE]);
+
     /* Make Decision*/
 private:
     int getPattern(int board[SIZE][SIZE],int teamColor,int x,int y,int dx,int dy);
@@ -74,10 +74,11 @@ private:
     void getCandidatePos(int board[SIZE][SIZE],bool candi[SIZE][SIZE]);     //获得候选落子点   
     int evaluate(int board[SIZE][SIZE],int teamColor);                      //评估函数，对盘面评分
     int isWin(int board[SIZE][SIZE],int teamColor,GBPoint p);
+    void updateBoard(int pBoard[SIZE][SIZE]);
 private:
     int boardCopy[SIZE][SIZE];
     int level;
-    int steps;
+    //int steps;
     //int color;
 
     int team;
