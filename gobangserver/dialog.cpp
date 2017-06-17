@@ -7,7 +7,8 @@ Dialog::Dialog(QWidget *parent) :
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
-
+    player_BLACK=nullptr;
+    player_WHITE=nullptr;
     playernum = 0;
 
     tcpserver = new QTcpServer();
@@ -35,6 +36,8 @@ Dialog::Dialog(QWidget *parent) :
     ui->statusLabel->setText(tr("The server is running on\n\nIP: %1\nport: %2\n\n"
                             "Run the Gobang Client now.")
                          .arg(ipAddress).arg(tcpserver->serverPort()));
+
+
 }
 
 Dialog::~Dialog()
@@ -44,7 +47,6 @@ Dialog::~Dialog()
 void Dialog::newPlayerConnected()
 {
     QByteArray block;
-
 
     if(!playernum)
     {
@@ -96,27 +98,36 @@ void Dialog::dataFromBLACK()
 }
 void Dialog::whitedisconnected()
 {
-    player_BLACK->write("O",1);
     qDebug()<<"player_white disconnected,reinitializing server.";
-    disconnect(player_BLACK, &QAbstractSocket::disconnected,
-            this, &Dialog::blackdisconnected);
-    player_BLACK->close();
-    delete player_WHITE;
+
+    disconnect(player_WHITE, &QAbstractSocket::disconnected,
+            this, &Dialog::whitedisconnected);
+    disconnect(player_WHITE, &QIODevice::readyRead, this, &Dialog::dataFromWHITE);
+
     player_WHITE = nullptr;
-    delete player_BLACK;
-    player_BLACK = nullptr;
+    if(player_BLACK)
+    {
+        player_BLACK->disconnectFromHost();
+    }
     playernum = 0;
 }
 void Dialog::blackdisconnected()
 {
-    player_WHITE->write("O",1);
     qDebug()<<"player_black disconnected,reinitializing server.";
-    disconnect(player_WHITE, &QAbstractSocket::disconnected,
-            this, &Dialog::whitedisconnected);
-    player_WHITE->close();
-    delete player_WHITE;
-    player_WHITE = nullptr;
-    delete player_BLACK;
+
+    disconnect(player_BLACK, &QAbstractSocket::disconnected,
+            this, &Dialog::blackdisconnected);
+    disconnect(player_BLACK, &QIODevice::readyRead, this, &Dialog::dataFromBLACK);
+
     player_BLACK = nullptr;
+    if(player_WHITE)
+    {
+        /*disconnect(player_BLACK, &QAbstractSocket::disconnected,
+            this, &Dialog::blackdisconnected);
+        disconnect(player_WHITE, &QAbstractSocket::disconnected,
+            this, &Dialog::whitedisconnected);*/
+        player_WHITE->disconnectFromHost();
+    }
+
     playernum = 0;
 }
