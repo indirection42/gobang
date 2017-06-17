@@ -28,6 +28,7 @@ public slots:
 private slots:
     void receivedData();
     void displayError(QAbstractSocket::SocketError socketError);
+    void remoteDisconnected();
 
 private:
     QTcpSocket *socket;

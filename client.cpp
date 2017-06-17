@@ -8,6 +8,8 @@ client::client(QObject *parent) :
     typedef void (QAbstractSocket::*QAbstractSocketErrorSignal)(QAbstractSocket::SocketError);
     connect(socket, static_cast<QAbstractSocketErrorSignal>(&QAbstractSocket::error),
             this, &client::displayError);
+    connect(socket, &QAbstractSocket::disconnected,
+            this, &client::remoteDisconnected);
     player = ONLINEPVPBLACK;
 }
 void client::setServer(QString servername, quint16 port)
@@ -151,4 +153,8 @@ void client::sendGiveupRequest()
     data.push_back(status);
 
     socket->write(data);
+}
+void client::remoteDisconnected()
+{
+    player=ONLINEPVPBLACK;
 }
