@@ -29,7 +29,7 @@ SOURCES += \
     gobangboard.cpp \
     boardui.cpp \
     client.cpp \
-    GobangAI.cpp
+    gobangai.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -37,7 +37,7 @@ HEADERS += \
     boardui.h \
     marcros.h \
     client.h \
-    GobangAI.h
+    gobangai.h
 
 FORMS += \
         mainwindow.ui

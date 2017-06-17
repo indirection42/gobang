@@ -5,7 +5,7 @@
 //  Created by Vain on 2017/6/3.
 //  Copyright © 2017年 Vain. All rights reserved.
 //
-#include "GobangAI.h"
+#include "gobangai.h"
 
 
 

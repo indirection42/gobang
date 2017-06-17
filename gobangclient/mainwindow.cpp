@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include "gobangboard.h"
 #include "boardui.h"
-#include "GobangAI.h"
+#include "gobangai.h"
 #include "client.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
