@@ -12,7 +12,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
+signals:
+    void requestLoadBoard(int blackTimer, int whiteTimer,QVector<int> record);
 private slots:
 
     void on_actionQuit_Application_triggered();

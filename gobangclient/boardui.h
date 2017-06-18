@@ -24,11 +24,9 @@ signals:
     void requestRegret(int player);
     void requestGiveUp(int player);
     void start();
-    void requestLoadBoard(int blackTimer, int whiteTimer,QVector<int> record);
     void requestSave(int gameMode);
 public slots:
     void newGame(int newGameMode);
-    int loadGame(void);
     void updateInformation(int state,int player,int board[SIZE][SIZE],QVector<int> record);
     void gameOver(int winner);
     void regretBinding();

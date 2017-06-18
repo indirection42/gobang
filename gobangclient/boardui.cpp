@@ -43,42 +43,6 @@ void BoardUi::newGame(int newGameMode){
     update();
 }
 
-int BoardUi::loadGame(void){
-    QString path = QFileDialog::getOpenFileName(this, tr("Choose your save"), ".", tr("Saving Files(*.save)"));
-    if(path.length() == 0)
-    {
-        QMessageBox::information(NULL, tr("Path"), tr("You didn't select any files."));
-        return ERROR_READ;
-    } else
-    {
-        QFile file1(path);
-        QTextStream out1(&file1);
-        file1.open(QFile::ReadOnly);
-        if(!file1.isOpen())
-        {
-            printf( "nope\n");
-            return ERROR_READ;
-        }
-        int b, w;
-        int gameMode;
-        out1 >> gameMode >> b >> w;
-        if(gameMode!=LOCALPVC&&gameMode!=LOCALPVP){
-            return ERROR_READ;
-        }
-        newGame(gameMode);
-        QVector<int> record;
-        while(!out1.atEnd())
-        {
-            qint32 i;
-            out1 >> i;
-            record.push_back(i);
-        }
-        emit requestLoadBoard(b, w,record);
-        file1.close();
-        return ERROR_NONE;
-    }
-    update();
-}
 
 void BoardUi::save(void)
 {
@@ -90,11 +54,14 @@ void BoardUi::updateInformation(int state,int player,int board[SIZE][SIZE], QVec
     stateCopy=state;
     playerCopy=player;
     recordCopy=record;
-    if((stateCopy == INGAME)|(stateCopy==IDLE))
+    if((stateCopy == INGAME)|(stateCopy==IDLE)){
         addNumber = 0;
-    else if(stateCopy == OVER)
+        update();
+     }
+    else if(stateCopy == OVER){
         addNumber = 1;
-    update();
+        gameOver(player);
+    }
 }
 
 //when game over
@@ -254,11 +221,7 @@ void BoardUi::gameOver(int winner)
             p.save(path +".png","png");
         }
     }
-    else
-    {
-        //clean the board
-        //restart
-    } 
+    return;
 }
 
 void BoardUi::regretBinding()

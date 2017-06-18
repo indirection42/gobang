@@ -25,9 +25,6 @@ int GobangBoard::play(int x, int y) {
     record.push_back(x * 100 + y);
     check(x, y);
     emit boardChange(state,player,board,record);
-    if(state==OVER){
-        emit requestGameover(player);
-    }
     return ERROR_NONE;
   }
 }
@@ -75,8 +72,7 @@ void GobangBoard::giveup(int loser)
         else
             winner=BLACK;
     }
-    emit boardChange(state,player,board,record);
-    emit requestGameover(winner);
+    emit boardChange(state,winner,board,record);
 }
 
 void GobangBoard::start(){
