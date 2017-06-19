@@ -11,7 +11,21 @@
 
 int GobangAI::PatternScore[13] = 
     {
-        
+    100,    //L5        0
+    90,     //L4        1
+    90,     //D4 * 2    2
+    90,     //D4 L3     3
+
+    80,     //L3 * 2    4
+    70,     //D3 L3     5
+    60,     //D4        6
+    50,     //L3        7
+    40,     //L2 * 2    8
+    30,     //D3        9
+    20,     //L2        10
+    10,     //D2        11
+    0,      //Single piece      12
+        /*
         560,    //L5        0
         280,     //L4        1
         280,     //D4 * 2    2
@@ -26,7 +40,7 @@ int GobangAI::PatternScore[13] =
         20,     //L2        10
         10,     //D2        11
         0,      //Single piece      12
-        
+        */
     };
 
 void GobangAI::updateBoard(int pBoard[SIZE][SIZE])
@@ -55,7 +69,7 @@ GobangAI::GobangAI(int t,int l)
 GobangAI::GobangAI(int AIcolor)
 {
     memset(boardCopy,0,sizeof(boardCopy));
-    level = 2;
+    level = 4;
     team = AIcolor;       //AI方
     //steps = 0;
     enemy = team==BLACK?WHITE:BLACK;
@@ -69,23 +83,28 @@ void GobangAI::setLevel(int l)
         level = 1;
 }
 
-int GobangAI::evaluate(int board[SIZE][SIZE],int teamColor)
+int GobangAI::evaluate(int teamColor)
 {
     int dir[4][2] = {{0,1},{1,1},{1,0},{1,-1}};
     int patCount[13] = {0};
     for(int x = 0;x<SIZE;x++)
         for(int y = 0;y<SIZE;y++) 
         {
-            if(board[x][y]==teamColor)
+            if(boardCopy[x][y]==teamColor)
             {
                 int pat = 100;
+                bool connectPatt = false;
                 for(int i =0;i<4;i++){
-                    int getpat = getPattern(board,teamColor,x,y,dir[i][0],dir[i][1]);
+                    int getpat = getPattern(teamColor,x,y,dir[i][0],dir[i][1]);
+                    if(getpat==pat) connectPatt = true;
                     if(getpat==-1) continue;
-                    if(getpat<pat) pat = getpat;
+                    if(getpat<pat) {pat = getpat;connectPatt=false;}
                 }//Win
                 if(pat>=0)
+                {
+                    if(pat>0&&connectPatt==true) pat--;
                     patCount[pat]++;
+                }
             }
         }
         if(patCount[6]>=2)
@@ -118,17 +137,17 @@ int GobangAI::evaluate(int board[SIZE][SIZE],int teamColor)
 }
 
 
-int GobangAI::getPattern(int board[SIZE][SIZE],int teamColor,int x,int y,int dx,int dy)
+int GobangAI::getPattern(int teamColor,int x,int y,int dx,int dy)
 {
     bool live = true;
     int ENEMY = teamColor==BLACK?WHITE:BLACK;
     int tx = x - dx;
     int ty = y - dy;
-    if(tx<0||ty<0||board[ty][tx]==ENEMY)
+    if(tx<0||ty<0||boardCopy[ty][tx]==ENEMY)
     {
         live = false;
     }
-    if(board[tx][ty]==teamColor)
+    if(boardCopy[tx][ty]==teamColor)
     {
         return -1; //Inside a pattern
     }
@@ -141,11 +160,11 @@ int GobangAI::getPattern(int board[SIZE][SIZE],int teamColor,int x,int y,int dx,
     {
         tx += dx;
         ty += dy;
-        if(tx>=SIZE||ty>=SIZE||(board[tx][ty]==ENEMY))
+        if(tx>=SIZE||ty>=SIZE||(boardCopy[tx][ty]==ENEMY))
         {
             if(live==false) // two sides are both blocked
                 return -1;
-            if(board[tx-dx][ty-dy]==teamColor&&line==true)
+            if(boardCopy[tx-dx][ty-dy]==teamColor&&line==true)
                     live = false;
 
             // Reverse search
@@ -155,15 +174,15 @@ int GobangAI::getPattern(int board[SIZE][SIZE],int teamColor,int x,int y,int dx,
             {
                 tx -= dx;
                 ty -= dy;
-                if(tx<0||ty<0||board[tx][ty]==ENEMY)
+                if(tx<0||ty<0||boardCopy[tx][ty]==ENEMY)
                     return -1;
             }
 
             break;
         }
-        else if(board[tx][ty]==0)
+        else if(boardCopy[tx][ty]==0)
             line = false;
-        else if(board[tx][ty]==teamColor&&line==true)
+        else if(boardCopy[tx][ty]==teamColor&&line==true)
         {
             count++;
         }
@@ -198,10 +217,10 @@ int GobangAI::getPattern(int board[SIZE][SIZE],int teamColor,int x,int y,int dx,
 
 
 
-void GobangAI::getCandidatePos(int board[SIZE][SIZE],bool candi[SIZE][SIZE])
+void GobangAI::getCandidatePos(bool candi[SIZE][SIZE])
 {
     //Scale posScale;
-    const int range = 3;
+    const int range = 2;
     for(int i = 0;i<SIZE;i++)
         for(int j=0;j<SIZE;j++)
             candi[i][j] = false;
@@ -209,12 +228,12 @@ void GobangAI::getCandidatePos(int board[SIZE][SIZE],bool candi[SIZE][SIZE])
     for(int y =0;y<SIZE;y++)
         for(int x = 0;x<SIZE;x++)
         {
-            if(board[x][y]!=0)
+            if(boardCopy[x][y]!=0)
                 for(int i = x-range;i<=x+range;i++)
                     for(int j = y-range;j<=y+range;j++)
                     {
                         /* Get the candidate position */
-                        if(j>=0&&j<SIZE&&i>=0&&i<SIZE&&board[i][j]==0){
+                        if(j>=0&&j<SIZE&&i>=0&&i<SIZE&&boardCopy[i][j]==0){
                             candi[i][j]=true;
                         }
                     }
@@ -237,7 +256,7 @@ void GobangAI::makeDecision(int state,int player,int pBoard[SIZE][SIZE],QVector<
 
     vector<GBPoint> bestPos;
 
-    alphaBeta(boardCopy,INFINITY,-INFINITY,team,level,bestPos);
+    alphaBeta(INFINITY,-INFINITY,team,level,bestPos);
     int randNumber = rand()%bestPos.size();
     int x = bestPos[randNumber].x;
     int y = bestPos[randNumber].y;
@@ -247,7 +266,7 @@ void GobangAI::makeDecision(int state,int player,int pBoard[SIZE][SIZE],QVector<
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
 
-int GobangAI::sortPos(int board[SIZE][SIZE],bool candidatePos[SIZE][SIZE],list<PosWithScore>& sortedCandi,int teamColor)
+int GobangAI::sortPos(bool candidatePos[SIZE][SIZE],list<PosWithScore>& sortedCandi,int teamColor)
 {
     int opponent = teamColor==BLACK?WHITE:BLACK;
     for(int x=0;x<SIZE;x++)
@@ -255,11 +274,11 @@ int GobangAI::sortPos(int board[SIZE][SIZE],bool candidatePos[SIZE][SIZE],list<P
         {
             if(candidatePos[x][y]==true)
             {
-                board[x][y] = teamColor;
-                int AttackScore = evaluate(board,teamColor);
-                board[x][y] = opponent;
-                int OpponentScore = evaluate(board,opponent);
-                board[x][y] = 0;
+                boardCopy[x][y] = teamColor;
+                int AttackScore = evaluate(teamColor);
+                boardCopy[x][y] = opponent;
+                int OpponentScore = evaluate(opponent);
+                boardCopy[x][y] = 0;
                 PosWithScore p(x,y,AttackScore+OpponentScore);
                 list<PosWithScore>::iterator it = sortedCandi.begin();
                 while(it!=sortedCandi.end())
@@ -278,14 +297,14 @@ int GobangAI::sortPos(int board[SIZE][SIZE],bool candidatePos[SIZE][SIZE],list<P
 
 #define WIN 140
 #define LOSE -7777777
-int GobangAI::oneStep(int board[SIZE][SIZE],GBPoint p,int teamColor,bool& isattack)
+int GobangAI::oneStep(GBPoint p,int teamColor,bool& isattack)
 {
     int opponent = teamColor==BLACK?WHITE:BLACK;
-    board[p.x][p.y] = teamColor;
-    int AttackScore = evaluate(board,teamColor);
-    board[p.x][p.y] = opponent;
-    int OpponentScore = evaluate(board,opponent);  
-    board[p.x][p.y] = 0;
+    boardCopy[p.x][p.y] = teamColor;
+    int AttackScore = evaluate(teamColor);
+    boardCopy[p.x][p.y] = opponent;
+    int OpponentScore = evaluate(opponent);
+    boardCopy[p.x][p.y] = 0;
     if(AttackScore>=WIN&&OpponentScore<WIN)
     {
         isattack=true;
@@ -310,12 +329,12 @@ int GobangAI::oneStep(int board[SIZE][SIZE],GBPoint p,int teamColor,bool& isatta
 
     
 }
-int GobangAI::isWin(int board[SIZE][SIZE],int teamColor,GBPoint p){
+int GobangAI::isWin(int teamColor,GBPoint p){
     int dir[4][2] = {{0,1},{1,1},{1,0},{1,-1}};
     int opponent = teamColor==BLACK?WHITE:BLACK;
     for(int i =0;i<4;i++){
-        int getpat = getPattern(board,teamColor,p.x,p.y,dir[i][0],dir[i][1]);
-        if(getpat==0) return PatternScore[0]-evaluate(board,opponent);
+        int getpat = getPattern(teamColor,p.x,p.y,dir[i][0],dir[i][1]);
+        if(getpat==0) return PatternScore[0]-evaluate(opponent);
     }//Win
     return -1;
 }
@@ -323,19 +342,19 @@ int GobangAI::isWin(int board[SIZE][SIZE],int teamColor,GBPoint p){
 
 #define CUT -9999999
 
-int GobangAI::alphaBeta(int board[SIZE][SIZE],int beta,int alpha,int teamColor,int depth,vector<GBPoint>& bestPos)
+int GobangAI::alphaBeta(int beta,int alpha,int teamColor,int depth,vector<GBPoint>& bestPos)
 {
     //non-leaf node
     int opponent = teamColor==BLACK?WHITE:BLACK;
     if(depth==0)//Leaf or finished
     {   
-        int val1 = evaluate(board,teamColor);
-        int val2 = evaluate(board,opponent);
-        return (val1-val2);
+        int val1 = evaluate(teamColor);
+        int val2 = evaluate(opponent);
+        return (int)((double)val1-(double)val2*1.15);
     }
 
     bool candidatePos[SIZE][SIZE];
-    getCandidatePos(board,candidatePos);
+    getCandidatePos(candidatePos);
 
     if(depth==level)
     {
@@ -346,7 +365,7 @@ int GobangAI::alphaBeta(int board[SIZE][SIZE],int beta,int alpha,int teamColor,i
                 {
                     bool isattack = false;
                     GBPoint p(i,j);
-                    int retval = oneStep(board,p,teamColor,isattack);
+                    int retval = oneStep(p,teamColor,isattack);
                     if(retval > alpha)
                     { 
                         alpha = retval;
@@ -363,18 +382,19 @@ int GobangAI::alphaBeta(int board[SIZE][SIZE],int beta,int alpha,int teamColor,i
                 }
         }
     }
-    
+
+
     list<PosWithScore> sortedPosSet;
-    sortPos(board,candidatePos,sortedPosSet,teamColor);
+    sortPos(candidatePos,sortedPosSet,teamColor);
 
     for(list<PosWithScore>::iterator sit = sortedPosSet.begin();sit!=sortedPosSet.end();sit++)
     {
         GBPoint p(sit->x,sit->y);
-        board[p.x][p.y] = teamColor;
+        boardCopy[p.x][p.y] = teamColor;
         int v;
-        //if((v=isWin(board,teamColor,p))==-1)
-            v = -alphaBeta(board,-alpha,-beta,opponent,depth-1,bestPos);
-        board[p.x][p.y] = 0;
+        //if((v=isWin(,teamColor,p))==-1)
+            v = -alphaBeta(-alpha,-beta,opponent,depth-1,bestPos);
+        boardCopy[p.x][p.y] = 0;
         if(v>=beta)
         {
             return beta;
