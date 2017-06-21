@@ -93,16 +93,13 @@ int GobangAI::evaluate(int teamColor)
             if(boardCopy[x][y]==teamColor)
             {
                 int pat = 100;
-                bool connectPatt = false;
                 for(int i =0;i<4;i++){
                     int getpat = getPattern(teamColor,x,y,dir[i][0],dir[i][1]);
-                    if(getpat==pat) connectPatt = true;
                     if(getpat==-1) continue;
-                    if(getpat<pat) {pat = getpat;connectPatt=false;}
+                    if(getpat<pat) pat = getpat;
                 }//Win
                 if(pat>=0)
                 {
-                    if(pat>0&&connectPatt==true) pat--;
                     patCount[pat]++;
                 }
             }
