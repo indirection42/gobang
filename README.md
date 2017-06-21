@@ -27,22 +27,36 @@
 
 ## 使用方法
 
-## 各文件详细介绍
-源代码:
+## 组件（各类）间工作原理
+
+## 各类详细uml图
+- GobangBoard(棋盘底层存储)
+![gobangboard.png](./uml_png/gobangboard.png)
+- GobangAI(电脑AI)
+![gobangai.png](./uml_png/gobangai.png)
+- BoardUi(棋盘界面)
+![boardui.png](./uml_png/boardui.png)
+- Client(客户端类)
+![client.png](./uml_png/client.png)
+- Dialog（带界面服务器类）
+![server.png](./uml_png/server.png)
+## 各源代码文件介绍
+- 客户端部分主程序
+`gobangclient/main.cpp`
+- 定义了整个程序中用到的宏名
 `gobangclient/marcos.h`
-`gobangclient/mainwindow.h`
-`gobangclient/mainwindow.cpp`
-`gobangclient/mainwindow.ui`
-`gobangclient/boardui.h`
-`gobangclient/boardui.cpp`
-`gobangclient/client.h`
-`gobangclient/client.cpp`
-`gobangclient/gobangai.h`
-`gobangclient/gobangai.cpp`
-`gobangclient/gobangboard.h`
-`gobangclient/gobangboard.cpp`
-`gobangserver/dialog.h`
-`gobangserver/dialog.cpp`
-`gobangserver/dialog.ui`
+- 主窗口的头文件、cpp文件和ui设计文件
+`gobangclient/mainwindow.h`，`gobangclient/mainwindow.cpp`，`gobangclient/mainwindow.ui`
+- 棋盘界面类的头文件、cpp文件
+`gobangclient/boardui.h`，`gobangclient/boardui.cpp`
+- 客户端类的头文件、cpp文件
+`gobangclient/client.h`，`gobangclient/client.cpp`
+- 电脑AI类的头文件、cpp文件
+`gobangclient/gobangai.h`，`gobangclient/gobangai.cpp`
+- 棋盘底层存储类的头文件、cpp文件
+`gobangclient/gobangboard.h`，`gobangclient/gobangboard.cpp`
+- 服务器类头文件、cpp文件和ui设计文件
+`gobangserver/dialog.h`，`gobangserver/dialog.cpp`，`gobangserver/dialog.ui`，
+- 服务器端主程序
 `gobangserver/main.cpp`
 
