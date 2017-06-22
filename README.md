@@ -59,7 +59,18 @@
 	`void RemotePlayerdisconnected();`
 	- 收到该信号表示另一玩家的连接被断开，游戏直接结束
 - server
-	1. 
+	1. 服务端类，负责监听客户端的连接请求，并在双方连接后提供转发服务
+	2. 记录目前服务端的连接数，分配两个玩家的身份
+	3. 在一方玩家断开后断开另一个玩家，初始化服务端（目前仅支持1对玩家进行游戏）
+	### 新玩家连接 newPlayerConnected()
+	`void newPlayerConnected();`
+	- 有新玩家连接，若目前无人连接，则发送等待信号让客户端等待，若有1人已连接，则向双方发送游戏开始信号，更多玩家则忽略（目前仅支持1对玩家进行游戏）
+	### 白方发来数据 dataFromWHITE()
+	`void dataFromWHITE();`
+	- 摆放
+   `void dataFromBLACK();`
+    `void whitedisconnected();`
+    `void blackdisconnected();`
 ## 各类详细uml图
 - GobangBoard(棋盘底层存储)
 ![gobangboard.png](./uml_png/gobangboard.png)
