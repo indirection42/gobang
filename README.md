@@ -67,10 +67,14 @@
 	- 有新玩家连接，若目前无人连接，则发送等待信号让客户端等待，若有1人已连接，则向双方发送游戏开始信号，更多玩家则忽略（目前仅支持1对玩家进行游戏）
 	### 白方发来数据 dataFromWHITE()
 	`void dataFromWHITE();`
+	- 白方发来数据，原样转发给黑方
+	### 黑方发来数据 dataFromBLACK()
+	`void dataFromBLACK();`
+	- 黑方发来数据，原样转发给白方
+	### 白方断开 whitedisconnected()
+	`void whitedisconnected();`
 	- 摆放
-   `void dataFromBLACK();`
-    `void whitedisconnected();`
-    `void blackdisconnected();`
+    `void blackdisconnected();`
 ## 各类详细uml图
 - GobangBoard(棋盘底层存储)
 ![gobangboard.png](./uml_png/gobangboard.png)
