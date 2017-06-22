@@ -28,7 +28,20 @@
 	4. 游戏结束可以保存游戏棋谱(带落子顺序标记)  
 
 ## 使用方法
-
+- 开始游戏
+	1. 启动Client客户端，打开菜单Game - New Game, 选择Local PvP或Local PvE即可开始一局单机的人人对战或人机对战游戏。
+	2. 启动Server服务端，再打开两个Client客户端，分别选择Online PvP模式，即可开始一局联机的人人对战游戏。
+- 悔棋和认输
+	1. 在界面的右侧点击`Ask For Regret`按钮或者在棋盘上右键点击即可进行悔棋，网络对战模式下对方同意才可以悔棋
+	2. 在界面的右侧点击`Give Up`按钮即可认输
+- 保存/读取进度
+	1. 在Client客户端中单机游戏开始后，打开菜单Game - Save Game，保存当前对弈的存档（任意设置存储位置与文件名）。
+	2. 在Client客户端打开后，打开菜单Game - Load Game，即可载入之前保存的对弈，游戏模式以保存时的游戏模式为准（任意选择存档）。
+- 保存棋谱
+	1. 在任意一局比赛完成后，都可以选择保存当前比赛的棋谱————记录整局对弈过程的图片文件（任意设置存储位置与文件名）。
+- 关闭游戏
+	1. 点击窗口右上角红叉。
+	2. 在Client客户端中可以打开菜单Game - Quit Application，退出应用。
 ## 组件（各类）间工作原理
 - client
 	1. 客户端类，负责与服务端建立连接并通信，在连接成功并服务器端发来开始信号后创建新的一局游戏。
@@ -80,12 +93,10 @@
 	### 黑方断开 blackdisconnected()
 	`void blackdisconnected();`
 	- 黑方断开了连接，则重置黑方的套接字，并解除信号槽的连接，并主动断开白方的连接
-* 人机对战AI  
+- 人机对战AI  
 围棋游戏中AI单独作为一个类，实例化为对象。AI对象拥有与board同步的棋盘拷贝，从而将AI的运算与棋盘隔离。  
-
-	* AI类
-   
-		```cpp
+	- AI类   
+```cpp
 class GobangAI:public QObject
 {
     	Q_OBJECT
@@ -115,38 +126,34 @@ class GobangAI:public QObject
 	    int enemy;
 	    static int PatternScore[13];
 };
-	```  
+```
 	**基本思路：**
 	AI类隐藏了决策需要的各种方法，对外提供唯一的决策、以及难度level的设定接口。AI在构造时确定落子方，并根据输入的信息返回输出信息。
 	
-	* **决策** ：
-	当棋盘发生变化时，发出boardChange信号，AI执行  
-		
-	```cpp
+	- **决策** ：
+	当棋盘发生变化时，发出boardChange信号，AI执行  	
+```cpp
   	void makeDecision(int state,int player,int pBoard[SIZE][SIZE],
-   QVector<int> record);  
-	```
+   QVector<int> record);
+```
 	该成员函数的会根据信号传递的当前游戏状态、玩家、棋盘状态以及游戏记录做出反馈，若轮到AI方落子，则计算落子位置，并给棋盘发出落子信号。若为玩家落子则直接返回不作处理。
 	
-	* **博弈树**  
-	在决策函数内部： 
-	
-		```cpp
+	- **博弈树**  
+	在决策函数内部：
+```cpp
 	 updateBoard(pBoard);
 	 ...
 	 vector<GBPoint> bestPos;
 	 alphaBeta(INFINITY,-INFINITY,team,level,bestPos);
 	 ...
     emit aiRequestPlay(x,y);
-    
-		```
+```
 	落子的计算由alphaBeta完成，该函数实现了博弈树的遍历以及Alpha-Beta剪枝。博弈树的实质是计算每一层的极大极小值。在博弈树中，从树根节点至叶节点依次表示AI以及人类对手，每一层之间则可以看做落子动作，因此整个搜索过程就是遍历各种落子的可能性，并在各种方案中选择较优方案。  
 	如图所示，在树结构中，每一层都有该落子点的评分。每一层的落子方都会选择对自己最有利的落子点，即从子节点中选择对落子方来说的最高分。因此从AI的角度来看，**MIN层**（人类棋手）会选择子节点中的**最低分**作为本节点的分数；而在**MAX层**，其评分则选取子节点中的**最高分**。  
 ![alphabeta.png](./uml_png/alphabeta.png)  
 	Alpha-Beta剪枝的作用是减少不必要的搜索，提高效率。
 	伪代码如下：
-	
-		```cpp
+```cpp
 	int alphaBeta(int beta,curColor,int alpha,int depth)
 	{  
 			if(depth==0) return evaluate(boardCopy)
@@ -165,7 +172,7 @@ class GobangAI:public QObject
 			}
 			return alpha;
 	}
-		```  
+```  
 	采用取负值并交换alpha、beta的实现方式，由于棋手双方互相对立，在某一层发生剪枝的情况为在该位置落子，对方会存在一个落子点使得己方得分低于其余点的最低分。
 	当递归至深度0（也可从0开始递归至最大深度），执行评价函数对当前局面打分，递归开始出栈，之后的每一个节点评分都从子节点的得分获取。
 	* **评价函数**  
