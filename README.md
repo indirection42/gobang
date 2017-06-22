@@ -30,12 +30,62 @@
 ## 使用方法
 
 ## 组件（各类）间工作原理
+- client
+	1. 客户端类，负责与服务端建立连接并通信，在连接成功并服务器端发来开始信号后创建新的一局游戏。
+	2. 与主界面的输入相连接，在游戏中发送本地玩家的操作到另一名玩家并接收另一名玩家的操作模拟实施到本地。
+	3. 接收本地玩家的悔棋请求并询问另一位玩家的同意。
+	4. 接收本地玩家的认输请求并通知另一位玩家。
+	### 发送数据功能 sendLocalPlay()
+	`void sendLocalPlay(int x, int y);`
+	- 将本地的下子位置发送到服务器
+	### 请求悔棋功能 sendRegretRequest()
+	`void sendRegretRequest();`
+	- 向另一位玩家发送悔棋请求，对方会被要求选择是否同意，若同意则悔一步棋
+	### 请求认输功能 sendGiveupRequest()
+	`void sendGiveupRequest();`
+	- 向另一位玩家发送认输请求，结束当前游戏，对方为胜利者
+	### 收到游戏开始信号 RemotePlayerReady()
+	`void RemotePlayerReady(int GameMode);`
+	- 收到该信号表示另一位玩家准备完毕，将开始游戏
+	- 新游戏的本地玩家身份由GameMode指定
+	### 收到下子信号 getRemotePlay()
+	`void getRemotePlay(int x,int y);`
+	- 收到该信号表示另一名玩家在x,y位置下了子
+	### 执行悔棋信号 excuteRegret()
+	`void excuteRegret(int regreter);`
+	- 收到该信号表示对方或本地同意悔棋，将以悔棋者为regreter的形式进行悔棋
+	### 执行认输信号 excuteGiveup()
+	` void excuteGiveup(int giveuper);`
+	- 收到该信号表示对方或本地认输，将以认输者为giveuper的形式进行悔棋
+	### 另一玩家断开连接信号 RemotePlayerdisconnected()
+	`void RemotePlayerdisconnected();`
+	- 收到该信号表示另一玩家的连接被断开，游戏直接结束
+- server
+	1. 服务端类，负责监听客户端的连接请求，并在双方连接后提供转发服务
+	2. 记录目前服务端的连接数，分配两个玩家的身份
+	3. 在一方玩家断开后断开另一个玩家，初始化服务端（目前仅支持1对玩家进行游戏）
+	### 新玩家连接 newPlayerConnected()
+	`void newPlayerConnected();`
+	- 有新玩家连接，若目前无人连接，则发送等待信号让客户端等待，若有1人已连接，则向双方发送游戏开始信号，更多玩家则忽略（目前仅支持1对玩家进行游戏）
+	- 连接后设置好通信的对应信号槽
+	### 白方发来数据 dataFromWHITE()
+	`void dataFromWHITE();`
+	- 白方发来数据，原样转发给黑方
+	### 黑方发来数据 dataFromBLACK()
+	`void dataFromBLACK();`
+	- 黑方发来数据，原样转发给白方
+	### 白方断开 whitedisconnected()
+	`void whitedisconnected();`
+	- 白方断开了连接，则重置白方的套接字，并解除信号槽的连接，并主动断开黑方的连接
+	### 黑方断开 blackdisconnected()
+	`void blackdisconnected();`
+	- 黑方断开了连接，则重置黑方的套接字，并解除信号槽的连接，并主动断开白方的连接
 * 人机对战AI  
 围棋游戏中AI单独作为一个类，实例化为对象。AI对象拥有与board同步的棋盘拷贝，从而将AI的运算与棋盘隔离。  
 
 	* AI类
    
-		```
+		```cpp
 class GobangAI:public QObject
 {
     	Q_OBJECT
@@ -72,16 +122,16 @@ class GobangAI:public QObject
 	* **决策** ：
 	当棋盘发生变化时，发出boardChange信号，AI执行  
 		
-		```
+	```cpp
   	void makeDecision(int state,int player,int pBoard[SIZE][SIZE],
    QVector<int> record);  
-		```
+	```
 	该成员函数的会根据信号传递的当前游戏状态、玩家、棋盘状态以及游戏记录做出反馈，若轮到AI方落子，则计算落子位置，并给棋盘发出落子信号。若为玩家落子则直接返回不作处理。
 	
 	* **博弈树**  
 	在决策函数内部： 
 	
-		``` 
+		```cpp
 	 updateBoard(pBoard);
 	 ...
 	 vector<GBPoint> bestPos;
@@ -96,7 +146,7 @@ class GobangAI:public QObject
 	Alpha-Beta剪枝的作用是减少不必要的搜索，提高效率。
 	伪代码如下：
 	
-		```
+		```cpp
 	int alphaBeta(int beta,curColor,int alpha,int depth)
 	{  
 			if(depth==0) return evaluate(boardCopy)
