@@ -28,7 +28,23 @@
 ## 使用方法
 
 ## 组件（各类）间工作原理
-
+- client
+	1.客户端类，负责与服务端建立连接并通信，在连接成功并服务器端发来开始信号后创建新的一局游戏。
+	2.与主界面的输入相连接，在游戏中发送本地玩家的操作到另一名玩家并接收另一名玩家的操作模拟实施到本地。
+	3.接收本地玩家的悔棋请求并询问另一位玩家的同意。
+	4.接收本地玩家的认输请求并通知另一位玩家。
+	### 发送数据功能 sendLocalPlay()
+	`void sendLocalPlay(int x, int y);`
+	1.将本地的下子位置发送到服务器
+	### 请求悔棋功能 sendRegretRequest()
+	`void sendRegretRequest();`
+	1.向另一位玩家发送悔棋请求，对方会被要求选择是否同意，若同意则悔一步棋
+	### 请求认输功能 sendGiveupRequest()
+	`void sendGiveupRequest();`
+	1.向另一位玩家发送认输请求，结束当前游戏，对方为胜利者
+	### 收到游戏开始信号 RemotePlayerReady()
+	`void RemotePlayerReady(int GameMode);`
+	
 ## 各类详细uml图
 - GobangBoard(棋盘底层存储)
 ![gobangboard.png](./uml_png/gobangboard.png)
