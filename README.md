@@ -40,9 +40,14 @@
 	
 ## 组件（各类）间工作原理
 - GobangBoard
-	1. 最底层的棋盘类，储存有棋盘board、历史记录record、当前游戏状态state、当前执子人player、剩余时间blackTimer,whiteTimer等基础的信息。
+	1. 最底层的棋盘类GobangBoard，储存有棋盘board、历史记录record、当前游戏状态state、当前执子人player、剩余时间blackTimer,whiteTimer等基础	的信息。
 	2. 提供的接口能够访问到所有的成员变量，但是只有剩余时间与游戏状态能够被修改。
 	3. 除了基础的棋盘状态判断功能check()、落子功能play()与放弃游戏等棋盘状态转换函数giveup()外，还提供了存档函数save()，能够将当前棋盘及其历史	    记录保存到文本文件当中。
+	### 棋盘
+		`int board[SIZE][SIZE];`
+		1. 由二维数组保存
+	### 落子功能 play()
+		`int play(int x, int y);`
 	
 ## 各类详细uml图
 - GobangBoard(棋盘底层存储)
