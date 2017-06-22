@@ -43,12 +43,34 @@
 	1. 最底层的棋盘类GobangBoard，储存有棋盘board、历史记录record、当前游戏状态state、当前执子人player、剩余时间blackTimer,whiteTimer等基础	的信息。
 	2. 提供的接口能够访问到所有的成员变量，但是只有剩余时间与游戏状态能够被修改。
 	3. 除了基础的棋盘状态判断功能check()、落子功能play()与放弃游戏等棋盘状态转换函数giveup()外，还提供了存档函数save()，能够将当前棋盘及其历史	    记录保存到文本文件当中。
-	### 棋盘
+	### 棋盘 board
 		int board[SIZE][SIZE];
-	1. 由二维数组保存
+	1. 由二维数组保存，每个单元对应棋盘上一个交叉点，储存这个位置的棋子信息。
 	### 落子功能 play()
 		int play(int x, int y);
-	
+	1. 在棋盘board[x][y]处放置与当前player对应的棋子。
+	2. 在历史记录record中添加当前落子记录。
+	3. 调用check()函数判断游戏是否结束。
+	4. 根据check()返回结果调整当前棋盘的状态，如更换执子人、游戏结束等。
+	### 悔棋功能 regret()
+		int GobangBoard::regret(int regreter);
+	1. 从历史记录record中pop出一条最近的记录。
+	2. 根据记录将棋盘恢复为上一次落子前的状态。
+	### 保存功能 save()
+		int save(int gamemode);
+	1. 槽函数，能够被其他任意类访问。
+	2. 将历史记录record写入文件。
+	3. 保存文件使用QFileDialog库，实现文件名与保存位置自定义。
+	### 读档功能 load()
+		void loadBoard(int b, int w, QVector<int> record);
+	1. 槽函数，能够被其他任意类访问。
+	2. 与上层函数配合，接收黑子、白子的剩余时间与游戏的历史记录。
+	3. 调用play()函数模拟上一次对弈。
+	4. 设置剩余时间完成读取。
+	### 放弃游戏 giveup()
+		void giveup(int loser)
+	1. 槽函数，能够被其他任意类访问。
+	2. 设置棋盘状态为游戏结束，并发出游戏结束的信号，启动游戏结束的各项进程。
 ## 各类详细uml图
 - GobangBoard(棋盘底层存储)
 ![gobangboard.png](./uml_png/gobangboard.png)
