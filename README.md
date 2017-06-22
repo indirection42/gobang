@@ -1,6 +1,6 @@
 # 面向对象程序设计大程序文档
 成员：
-3150 范宏昌 
+3150102277 范宏昌 
 3150 方共凡
 3150 杜众舒 
 3140103103 郑济元 
@@ -45,8 +45,20 @@
 	- 向另一位玩家发送认输请求，结束当前游戏，对方为胜利者
 	### 收到游戏开始信号 RemotePlayerReady()
 	`void RemotePlayerReady(int GameMode);`
-	- 收到该信号表示
-	
+	- 收到该信号表示另一位玩家准备完毕，将开始游戏
+	- 新游戏的本地玩家身份由GameMode指定
+	### 收到下子信号 getRemotePlay()
+	`void getRemotePlay(int x,int y);`
+	- 收到该信号表示另一名玩家在x,y位置下了子
+	### 执行悔棋信号 excuteRegret()
+	`void excuteRegret(int regreter);`
+	- 收到该信号表示对方或本地同意悔棋，将以悔棋者为regreter的形式进行悔棋
+	### 执行认输信号 excuteGiveup()
+	` void excuteGiveup(int giveuper);`
+	- 收到该信号表示对方或本地认输，将以认输者为giveuper的形式进行悔棋
+	### 另一玩家断开连接信号 RemotePlayerdisconnected()
+	`void RemotePlayerdisconnected();`
+	- 收到
 ## 各类详细uml图
 - GobangBoard(棋盘底层存储)
 ![gobangboard.png](./uml_png/gobangboard.png)
